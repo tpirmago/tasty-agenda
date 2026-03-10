@@ -1,68 +1,49 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@import "tailwindcss";
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+@theme {
+  /* ── Brand palette ── */
+  --color-background:            #FFFBF8;
+  --color-foreground:            #2F2A26;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  --color-card:                  #FFFBF8;
+  --color-card-foreground:       #2F2A26;
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
+  --color-popover:               #FFFBF8;
+  --color-popover-foreground:    #2F2A26;
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
+  --color-primary:               #415B8F;
+  --color-primary-foreground:    #FFFFFF;
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
+  --color-secondary:             #F5EDE8;
+  --color-secondary-foreground:  #2F2A26;
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  --color-accent:                #E27A3F;
+  --color-accent-foreground:     #FFFFFF;
+
+  --color-muted:                 #F5EDE8;
+  --color-muted-foreground:      #6B645F;
+
+  --color-border:                #F0E7E2;
+  --color-input:                 #F0E7E2;
+  --color-ring:                  #415B8F;
+
+  --color-destructive:           oklch(55% 0.2 25);
+  --color-destructive-foreground: #FFFFFF;
+
+  /* ── Card paper shadow ── */
+  --shadow-card: 0 4px 10px rgba(0, 0, 0, 0.05);
+
+  /* ── Misc ── */
+  --font-sans: "Poppins", system-ui, sans-serif;
+  --radius: 0.875rem; /* 14px */
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
+@layer base {
+  body {
+    background-image: url('/bg_dark.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh;
   }
 }

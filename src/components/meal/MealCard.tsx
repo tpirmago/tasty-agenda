@@ -1,0 +1,125 @@
+import { memo } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Pencil, Shuffle, Trash2, GripVertical, Utensils } from 'lucide-react'
+import { useState } from 'react'
+import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
+import type { Recipe } from '@/types/recipe'
+
+interface MealCardProps {
+  recipe: Recipe
+  portions: number
+  isDragging?: boolean
+  onRemove?: () => void
+  onReplace?: () => void
+  onView?: () => void
+  dragHandleProps?: Record<string, unknown>
+}
+
+export const MealCard = memo(function MealCard({
+  recipe,
+  portions,
+  isDragging,
+  onRemove,
+  onReplace,
+  onView,
+  dragHandleProps,
+}: MealCardProps) {
+  const [hovered, setHovered] = useState(false)
+  const previewIngredients = recipe.ingredients.slice(0, 2)
+
+  return (
+    <motion.div
+      className={cn(
+        'relative bg-card rounded-xl border border-border overflow-hidden shadow-sm cursor-pointer select-none',
+        isDragging && 'opacity-50 scale-95 shadow-lg ring-2 ring-primary/30'
+      )}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onClick={onView}
+      layout
+    >
+      {/* Drag handle */}
+      <div
+        {...dragHandleProps}
+        className="absolute top-2 left-2 z-10 text-muted-foreground/50 hover:text-muted-foreground cursor-grab active:cursor-grabbing"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <GripVertical size={14} />
+      </div>
+
+      {/* Image */}
+      <div className="relative h-24 w-full bg-muted overflow-hidden">
+        {recipe.image ? (
+          <img
+            src={recipe.image}
+            alt={recipe.title}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <Utensils size={24} className="text-muted-foreground" />
+          </div>
+        )}
+
+        {/* Portions badge */}
+        <Badge
+          variant="secondary"
+          className="absolute bottom-1.5 right-1.5 text-xs px-1.5 py-0"
+        >
+          {portions} ppl
+        </Badge>
+      </div>
+
+      {/* Content */}
+      <div className="p-2">
+        <p className="text-xs font-semibold text-foreground line-clamp-2 leading-tight mb-1">
+          {recipe.title}
+        </p>
+        <div className="space-y-0.5">
+          {previewIngredients.map((ing, i) => (
+            <p key={i} className="text-[10px] text-muted-foreground truncate">
+              · {ing.name}
+            </p>
+          ))}
+        </div>
+      </div>
+
+      {/* Hover overlay */}
+      <AnimatePresence>
+        {hovered && !isDragging && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="absolute inset-0 bg-foreground/60 rounded-xl flex items-center justify-center gap-2"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={(e) => { e.stopPropagation(); onView?.() }}
+              className="p-2 rounded-lg bg-white/20 hover:bg-white/30 text-white transition-colors"
+              title="View recipe"
+            >
+              <Pencil size={14} />
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); onReplace?.() }}
+              className="p-2 rounded-lg bg-white/20 hover:bg-white/30 text-white transition-colors"
+              title="Replace meal"
+            >
+              <Shuffle size={14} />
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); onRemove?.() }}
+              className="p-2 rounded-lg bg-red-500/40 hover:bg-red-500/60 text-white transition-colors"
+              title="Remove meal"
+            >
+              <Trash2 size={14} />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  )
+})
