@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Plus, Minus, Upload } from 'lucide-react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -34,11 +34,13 @@ export function AddRecipeModal({ open, onClose, userId }: AddRecipeModalProps) {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+    if (imagePreview) URL.revokeObjectURL(imagePreview)
     setImageFile(file)
     setImagePreview(URL.createObjectURL(file))
   }
 
   const handleClose = () => {
+    if (imagePreview) URL.revokeObjectURL(imagePreview)
     setTitle('')
     setIngredients([{ name: '', amount: '', unit: '' }])
     setInstructions('')
@@ -82,93 +84,108 @@ export function AddRecipeModal({ open, onClose, userId }: AddRecipeModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Add Recipe</DialogTitle>
-        </DialogHeader>
-
-        <div className="space-y-4">
-          {/* Name */}
-          <div className="space-y-1">
-            <Label>Recipe name *</Label>
-            <Input placeholder="e.g. Chicken Pasta" value={title} onChange={(e) => setTitle(e.target.value)} />
+      <DialogContent
+        showCloseButton={false}
+        className="max-w-md p-0 border-0 shadow-none bg-transparent overflow-visible"
+      >
+        {/* Wrapper for the floating-title effect */}
+        <div className="relative mt-6">
+          {/* Title straddling the top border */}
+          <div className="absolute top-0 left-6 -translate-y-1/2 px-3 bg-[#FFFBF8] z-10 whitespace-nowrap">
+            <h2 className="menu-card-title">Add Recipe</h2>
           </div>
 
-          {/* Image upload */}
-          <div className="space-y-1">
-            <Label>Photo</Label>
-            <div className="flex items-center gap-3">
-              {imagePreview && (
-                <img src={imagePreview} alt="preview" className="w-16 h-16 rounded-lg object-cover" />
-              )}
-              <label className="flex items-center gap-2 cursor-pointer px-3 py-2 rounded-lg border border-border hover:bg-muted transition-colors text-sm text-muted-foreground">
-                <Upload size={14} />
-                Upload image
-                <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
-              </label>
-            </div>
-          </div>
+          {/* Card body */}
+          <div
+            className="bg-white rounded-xl border-2 border-[#415B8F] px-6 pt-7 pb-6 max-h-[85vh] overflow-y-auto"
+            style={{ boxShadow: '4px 4px 0 0 #415B8F' }}
+          >
+            <div className="border-t border-dotted border-[#415B8F]/25 mb-4" />
 
-          {/* Ingredients */}
-          <div className="space-y-1">
-            <Label>Ingredients</Label>
-            <div className="space-y-2">
-              {ingredients.map((ing, i) => (
-                <div key={i} className="flex gap-2 items-center">
-                  <Input
-                    placeholder="Name"
-                    value={ing.name}
-                    onChange={(e) => updateIngredient(i, 'name', e.target.value)}
-                    className="flex-1"
-                  />
-                  <Input
-                    placeholder="Amt"
-                    value={ing.amount}
-                    onChange={(e) => updateIngredient(i, 'amount', e.target.value)}
-                    className="w-16"
-                  />
-                  <Input
-                    placeholder="Unit"
-                    value={ing.unit}
-                    onChange={(e) => updateIngredient(i, 'unit', e.target.value)}
-                    className="w-16"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 flex-shrink-0"
-                    onClick={() => removeIngredient(i)}
-                    disabled={ingredients.length === 1}
-                  >
-                    <Minus size={13} />
+            <div className="space-y-4">
+              {/* Name */}
+              <div className="space-y-1">
+                <Label>Recipe name *</Label>
+                <Input placeholder="e.g. Chicken Pasta" value={title} onChange={(e) => setTitle(e.target.value)} />
+              </div>
+
+              {/* Image upload */}
+              <div className="space-y-1">
+                <Label>Photo</Label>
+                <div className="flex items-center gap-3">
+                  {imagePreview && (
+                    <img src={imagePreview} alt="preview" className="w-16 h-16 rounded-lg object-cover" />
+                  )}
+                  <label className="flex items-center gap-2 cursor-pointer px-3 py-2 rounded-lg border border-border hover:bg-muted transition-colors text-sm text-muted-foreground">
+                    <Upload size={14} />
+                    Upload image
+                    <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                  </label>
+                </div>
+              </div>
+
+              {/* Ingredients */}
+              <div className="space-y-1">
+                <Label>Ingredients</Label>
+                <div className="space-y-2">
+                  {ingredients.map((ing, i) => (
+                    <div key={i} className="flex gap-2 items-center">
+                      <Input
+                        placeholder="Name"
+                        value={ing.name}
+                        onChange={(e) => updateIngredient(i, 'name', e.target.value)}
+                        className="flex-1"
+                      />
+                      <Input
+                        placeholder="Amt"
+                        value={ing.amount}
+                        onChange={(e) => updateIngredient(i, 'amount', e.target.value)}
+                        className="w-16"
+                      />
+                      <Input
+                        placeholder="Unit"
+                        value={ing.unit}
+                        onChange={(e) => updateIngredient(i, 'unit', e.target.value)}
+                        className="w-16"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 flex-shrink-0"
+                        onClick={() => removeIngredient(i)}
+                        disabled={ingredients.length === 1}
+                      >
+                        <Minus size={13} />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button type="button" variant="outline" size="sm" onClick={addIngredient}>
+                    <Plus size={13} className="mr-1.5" /> Add ingredient
                   </Button>
                 </div>
-              ))}
-              <Button type="button" variant="outline" size="sm" onClick={addIngredient}>
-                <Plus size={13} className="mr-1.5" /> Add ingredient
-              </Button>
+              </div>
+
+              {/* Instructions */}
+              <div className="space-y-1">
+                <Label>Instructions</Label>
+                <Textarea
+                  placeholder="Step-by-step cooking instructions..."
+                  value={instructions}
+                  onChange={(e) => setInstructions(e.target.value)}
+                  rows={4}
+                />
+              </div>
+
+              <div className="flex gap-2 pt-1">
+                <Button variant="outline" className="flex-1" onClick={handleClose}>
+                  Cancel
+                </Button>
+                <Button className="flex-1" onClick={handleSave} disabled={isSaving}>
+                  {isSaving ? 'Saving...' : 'Save recipe'}
+                </Button>
+              </div>
             </div>
-          </div>
-
-          {/* Instructions */}
-          <div className="space-y-1">
-            <Label>Instructions</Label>
-            <Textarea
-              placeholder="Step-by-step cooking instructions..."
-              value={instructions}
-              onChange={(e) => setInstructions(e.target.value)}
-              rows={4}
-            />
-          </div>
-
-          <div className="flex gap-2 pt-1">
-            <Button variant="outline" className="flex-1" onClick={handleClose}>
-              Cancel
-            </Button>
-            <Button className="flex-1" onClick={handleSave} disabled={isSaving}>
-              {isSaving ? 'Saving...' : 'Save recipe'}
-            </Button>
           </div>
         </div>
       </DialogContent>

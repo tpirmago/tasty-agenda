@@ -1,9 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Minus, Plus, ChevronRight, UtensilsCrossed } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { MenuCard } from '@/components/ui/menu-card'
 import { Badge } from '@/components/ui/badge'
 import { supabase } from '@/services/supabase/client'
 import { useAuth } from '@/features/auth/useAuth'
@@ -11,12 +10,10 @@ import { cn } from '@/lib/utils'
 import type { DietPreference } from '@/types/user'
 
 const DIET_OPTIONS: { value: DietPreference; label: string }[] = [
-  { value: 'vegetarian', label: '🌿 Vegetarian' },
-  { value: 'vegan', label: '🌱 Vegan' },
-  { value: 'gluten-free', label: '🌾 Gluten-free' },
-  { value: 'dairy-free', label: '🥛 Dairy-free' },
-  { value: 'halal', label: '☪️ Halal' },
-  { value: 'kosher', label: '✡️ Kosher' },
+  { value: 'vegetarian', label: 'Vegetarian' },
+  { value: 'vegan', label: 'Vegan' },
+  { value: 'gluten-free', label: 'Gluten-free' },
+  { value: 'lactose-free', label: 'Lactose-free' },
 ]
 
 export function Onboarding() {
@@ -65,13 +62,9 @@ export function Onboarding() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12">
       <div className="flex items-center gap-2 mb-10">
-        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary text-primary-foreground">
-          <UtensilsCrossed size={20} />
-        </div>
         <span className="text-2xl font-bold text-foreground">Tasty Agenda</span>
       </div>
 
-      {/* Step indicators */}
       <div className="flex items-center gap-2 mb-8">
         {[1, 2].map((s) => (
           <div
@@ -84,72 +77,64 @@ export function Onboarding() {
         ))}
       </div>
 
-      <Card className="w-full max-w-sm">
-        {step === 1 ? (
-          <>
-            <CardHeader>
-              <CardTitle>Welcome to Tasty Agenda! 👋</CardTitle>
-              <CardDescription>How many people do you cook for?</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center justify-center gap-6">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setFamilySize((n) => Math.max(1, n - 1))}
-                >
-                  <Minus size={16} />
-                </Button>
-                <span className="text-4xl font-bold text-foreground w-12 text-center">
-                  {familySize}
-                </span>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setFamilySize((n) => Math.min(10, n + 1))}
-                >
-                  <Plus size={16} />
-                </Button>
-              </div>
-              <p className="text-center text-sm text-muted-foreground">
-                {familySize === 1 ? 'Just you' : `${familySize} people`}
-              </p>
-              <Button className="w-full" onClick={() => setStep(2)}>
-                Next <ChevronRight size={16} className="ml-1" />
+      {step === 1 ? (
+        <MenuCard title="Welcome!" className="w-full max-w-sm">
+          <p className="text-xs text-muted-foreground mb-5">How many people do you cook for?</p>
+          <div className="space-y-5">
+            <div className="flex items-center justify-center gap-6">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setFamilySize((n) => Math.max(1, n - 1))}
+              >
+                -
               </Button>
-            </CardContent>
-          </>
-        ) : (
-          <>
-            <CardHeader>
-              <CardTitle>Any diet preferences?</CardTitle>
-              <CardDescription>Select all that apply (you can change this later)</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex flex-wrap gap-2">
-                {DIET_OPTIONS.map(({ value, label }) => (
-                  <Badge
-                    key={value}
-                    variant={dietPrefs.includes(value) ? 'default' : 'outline'}
-                    className="cursor-pointer text-sm py-1.5 px-3"
-                    onClick={() => toggleDiet(value)}
-                  >
-                    {label}
-                  </Badge>
-                ))}
-              </div>
-              <div className="flex gap-2 pt-2">
-                <Button variant="outline" className="flex-1" onClick={() => setStep(1)}>
-                  Back
-                </Button>
-                <Button className="flex-1" onClick={handleFinish} disabled={isSaving}>
-                  {isSaving ? 'Saving...' : "Let's cook! 🍳"}
-                </Button>
-              </div>
-            </CardContent>
-          </>
-        )}
-      </Card>
+              <span className="text-4xl font-black text-[#415B8F] w-12 text-center">
+                {familySize}
+              </span>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setFamilySize((n) => Math.min(10, n + 1))}
+              >
+                +
+              </Button>
+            </div>
+            <p className="text-center text-sm text-muted-foreground">
+              {familySize === 1 ? 'Just you' : `${familySize} people`}
+            </p>
+            <Button className="w-full" onClick={() => setStep(2)}>
+              Next
+            </Button>
+          </div>
+        </MenuCard>
+      ) : (
+        <MenuCard title="Diet Prefs" className="w-full max-w-sm">
+          <p className="text-xs text-muted-foreground mb-4">Select all that apply (you can change this later)</p>
+          <div className="space-y-4">
+            <div className="flex flex-wrap gap-2">
+              {DIET_OPTIONS.map(({ value, label }) => (
+                <Badge
+                  key={value}
+                  variant={dietPrefs.includes(value) ? 'default' : 'outline'}
+                  className="cursor-pointer text-sm py-1.5 px-3"
+                  onClick={() => toggleDiet(value)}
+                >
+                  {label}
+                </Badge>
+              ))}
+            </div>
+            <div className="flex gap-2 pt-2">
+              <Button variant="outline" className="flex-1" onClick={() => setStep(1)}>
+                Back
+              </Button>
+              <Button className="flex-1" onClick={handleFinish} disabled={isSaving}>
+                {isSaving ? 'Saving...' : "Let's cook!"}
+              </Button>
+            </div>
+          </div>
+        </MenuCard>
+      )}
     </div>
   )
 }

@@ -1,8 +1,7 @@
 import { Link } from 'react-router-dom'
-import { CalendarDays, ShoppingCart, BookOpen, Wand2 } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { MenuCard, MenuCardRow } from '@/components/ui/menu-card'
 import { useAuth } from '@/features/auth/useAuth'
 import { useQuery } from '@tanstack/react-query'
 import { getWeekPlan } from '@/features/weekly-planner/plannerService'
@@ -42,87 +41,61 @@ export function Dashboard() {
       <div className="flex-1 px-4 lg:px-6 py-6">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-foreground">
-            Good {getTimeOfDay()}, {profile?.familySize ? `cooking for ${profile.familySize}` : ''}! 👋
+            Good {getTimeOfDay()}{profile?.familySize ? `, cooking for ${profile.familySize}` : ''}!
           </h1>
           <p className="text-muted-foreground mt-1">Here's your meal planning overview.</p>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <CalendarDays size={16} /> Meals this week
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-foreground">{mealCount}</p>
-              <p className="text-xs text-muted-foreground mt-1">of 21 slots filled</p>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <MenuCard title="Meals">
+            <MenuCardRow
+              label="This week"
+              description="of 21 slots filled"
+              value={<span className="text-3xl font-black">{mealCount}</span>}
+            />
+          </MenuCard>
 
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <ShoppingCart size={16} /> Shopping items
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-foreground">{pendingItems}</p>
-              <p className="text-xs text-muted-foreground mt-1">items to buy</p>
-            </CardContent>
-          </Card>
+          <MenuCard title="Shopping">
+            <MenuCardRow
+              label="Items to buy"
+              description="pending this week"
+              value={<span className="text-3xl font-black">{pendingItems}</span>}
+            />
+          </MenuCard>
 
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <BookOpen size={16} /> Family size
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold text-foreground">{profile?.familySize ?? '—'}</p>
-              <p className="text-xs text-muted-foreground mt-1">people</p>
-            </CardContent>
-          </Card>
+          <MenuCard title="Family">
+            <MenuCardRow
+              label="Cooking for"
+              description="household members"
+              value={<span className="text-3xl font-black">{profile?.familySize ?? '—'}</span>}
+            />
+          </MenuCard>
         </div>
 
-        {/* Quick actions */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Card className="hover:shadow-md transition-shadow">
-            <CardContent className="pt-5 pb-5">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 text-primary">
-                  <Wand2 size={22} />
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-foreground">Plan this week</p>
-                  <p className="text-sm text-muted-foreground">Generate meals automatically</p>
-                </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <MenuCard title="Planner">
+            <MenuCardRow
+              label="Plan this week"
+              description="Generate meals automatically"
+              value={
                 <Button asChild size="sm">
-                  <Link to="/planner">Open planner</Link>
+                  <Link to="/planner">Open</Link>
                 </Button>
-              </div>
-            </CardContent>
-          </Card>
+              }
+            />
+          </MenuCard>
 
-          <Card className="hover:shadow-md transition-shadow">
-            <CardContent className="pt-5 pb-5">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-green-100 text-green-700">
-                  <ShoppingCart size={22} />
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-foreground">Shopping list</p>
-                  <p className="text-sm text-muted-foreground">
-                    {pendingItems > 0 ? `${pendingItems} items remaining` : 'All done!'}
-                  </p>
-                </div>
+          <MenuCard title="Shopping List">
+            <MenuCardRow
+              label="Weekly list"
+              description={pendingItems > 0 ? `${pendingItems} items remaining` : 'All done!'}
+              value={
                 <Button asChild size="sm" variant="outline">
-                  <Link to="/shopping">View list</Link>
+                  <Link to="/shopping">View</Link>
                 </Button>
-              </div>
-            </CardContent>
-          </Card>
+              }
+            />
+          </MenuCard>
         </div>
       </div>
     </div>

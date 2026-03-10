@@ -2,9 +2,7 @@ export type DietPreference =
   | 'vegetarian'
   | 'vegan'
   | 'gluten-free'
-  | 'dairy-free'
-  | 'halal'
-  | 'kosher'
+  | 'lactose-free'
 
 export interface Profile {
   id: string

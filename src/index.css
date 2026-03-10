@@ -5,7 +5,7 @@
   --color-background:            #FFFBF8;
   --color-foreground:            #2F2A26;
 
-  --color-card:                  #FFFBF8;
+  --color-card:                  #ffffff;
   --color-card-foreground:       #2F2A26;
 
   --color-popover:               #FFFBF8;
@@ -31,19 +31,52 @@
   --color-destructive-foreground: #FFFFFF;
 
   /* ── Card paper shadow ── */
-  --shadow-card: 0 4px 10px rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 8px 20px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.04);
 
   /* ── Misc ── */
   --font-sans: "Poppins", system-ui, sans-serif;
   --radius: 0.875rem; /* 14px */
 }
 
+@layer components {
+  /* ── Shadcn cards global style ── */
+  [data-slot="card"] {
+    border-color: #e7e2dd;
+    position: relative;
+    overflow: hidden;
+  }
+
+  [data-slot="card"]::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: #4F6D7A;
+  }
+
+  /* ── Retro menu card title ── */
+  .menu-card-title {
+    font-size: 1.35rem;
+    font-weight: 900;
+    color: #f6b1b8;
+    -webkit-text-stroke: 1.5px #415B8F;
+    text-shadow: 2px 2px 0 #415B8F;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    display: inline-block;
+    line-height: 1.2;
+  }
+}
+
 @layer base {
   body {
-    background-image: url('/bg_dark.png');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
+    background-color: #FFFBF8;
+    background-image:
+      linear-gradient(to right, rgba(220,130,150,0.4) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(220,130,150,0.4) 1px, transparent 1px);
+    background-size: 24px 24px;
     min-height: 100vh;
   }
 }

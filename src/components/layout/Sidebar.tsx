@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard,
   CalendarDays,
@@ -6,8 +6,10 @@ import {
   ShoppingCart,
   Settings,
   UtensilsCrossed,
+  LogOut,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/features/auth/useAuth'
 
 const NAV_ITEMS = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -18,14 +20,19 @@ const NAV_ITEMS = [
 ]
 
 export function Sidebar() {
+  const { signOut } = useAuth()
+  const navigate = useNavigate()
+
+  const handleSignOut = async () => {
+    await signOut()
+    navigate('/login')
+  }
+
   return (
-    <aside className="hidden lg:flex flex-col w-60 min-h-screen bg-card border-r border-border fixed left-0 top-0 z-30">
+    <aside className="hidden lg:flex flex-col w-60 min-h-screen fixed left-0 top-0 z-30" style={{ backgroundColor: '#faf3ef' }}>
       {/* Logo */}
-      <div className="flex items-center gap-2 px-6 py-5 border-b border-border">
-        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary text-primary-foreground">
-          <UtensilsCrossed size={16} />
-        </div>
-        <span className="font-semibold text-foreground text-lg">Tasty Agenda</span>
+      <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+        <span className="font-semibold text-lg text-foreground">Tasty Agenda</span>
       </div>
 
       {/* Nav */}
@@ -38,8 +45,8 @@ export function Sidebar() {
               cn(
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
                 isActive
-                  ? 'bg-accent text-accent-foreground'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  ? 'bg-black/10 text-foreground'
+                  : 'text-muted-foreground hover:bg-black/5 hover:text-foreground'
               )
             }
           >
@@ -48,6 +55,18 @@ export function Sidebar() {
           </NavLink>
         ))}
       </nav>
+
+      {/* Sign out */}
+      <div className="px-3 py-4" style={{ borderTop: '1px solid rgba(0,0,0,0.08)' }}>
+        <button
+          onClick={handleSignOut}
+          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-red-50"
+          style={{ color: '#b05a5a' }}
+        >
+          <LogOut size={18} />
+          Sign out
+        </button>
+      </div>
     </aside>
   )
 }
