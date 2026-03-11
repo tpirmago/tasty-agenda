@@ -31,7 +31,8 @@ export function usePlanner(userId: string, weekStart: string, familySize: number
       queryClient.invalidateQueries({ queryKey: ['shopping', userId, weekStart] })
       toast.success('Week generated!', { id: 'generate' })
     },
-    onError: () => {
+    onError: (err) => {
+      console.error('[generateWeek] error:', err)
       toast.error('Failed to generate meals. Try again.', { id: 'generate' })
     },
   })

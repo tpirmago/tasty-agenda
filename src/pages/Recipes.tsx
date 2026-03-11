@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Search, Plus, Utensils } from 'lucide-react'
+import { useSearchParams } from 'react-router-dom'
 import { Header } from '@/components/layout/Header'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -15,7 +16,13 @@ import type { Recipe } from '@/types/recipe'
 
 export function RecipesPage() {
   const { user, profile } = useAuth()
-  const [search, setSearch] = useState('')
+  const [searchParams] = useSearchParams()
+  const [search, setSearch] = useState(searchParams.get('q') ?? '')
+
+  useEffect(() => {
+    const q = searchParams.get('q')
+    if (q) setSearch(q)
+  }, [searchParams])
   const [tab, setTab] = useState<'all' | 'custom' | 'mealdb'>('all')
   const [showAdd, setShowAdd] = useState(false)
   const [viewRecipe, setViewRecipe] = useState<Recipe | null>(null)
@@ -37,6 +44,7 @@ export function RecipesPage() {
       <Header onAddRecipe={() => setShowAdd(true)} />
 
       <div className="flex-1 px-4 lg:px-6 py-4">
+        <div className="max-w-5xl mx-auto">
         {/* Page header */}
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-xl font-bold text-foreground">Recipes</h1>
@@ -103,6 +111,7 @@ export function RecipesPage() {
             ))}
           </div>
         )}
+        </div>
       </div>
 
       <AddRecipeModal

@@ -47,7 +47,8 @@ export function SettingsPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <div className="flex-1 px-4 lg:px-6 py-6 max-w-2xl">
+      <div className="flex-1 px-4 lg:px-6 py-6">
+        <div className="max-w-2xl mx-auto">
         <h1 className="text-xl font-bold text-foreground mb-10">Settings</h1>
 
         <div className="space-y-10">
@@ -99,6 +100,7 @@ export function SettingsPage() {
           <Button onClick={handleSave} disabled={isSaving}>
             {isSaving ? 'Saving...' : 'Save changes'}
           </Button>
+        </div>
         </div>
       </div>
     </div>

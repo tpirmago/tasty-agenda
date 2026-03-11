@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { saveRecipe, uploadRecipeImage } from './recipeService'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -88,19 +89,12 @@ export function AddRecipeModal({ open, onClose, userId }: AddRecipeModalProps) {
         showCloseButton={false}
         className="max-w-md p-0 border-0 shadow-none bg-transparent overflow-visible"
       >
-        {/* Wrapper for the floating-title effect */}
-        <div className="relative mt-6">
-          {/* Title straddling the top border */}
-          <div className="absolute top-0 left-6 -translate-y-1/2 px-3 bg-[#FFFBF8] z-10 whitespace-nowrap">
-            <h2 className="menu-card-title">Add Recipe</h2>
-          </div>
-
-          {/* Card body */}
-          <div
-            className="bg-white rounded-xl border-2 border-[#415B8F] px-6 pt-7 pb-6 max-h-[85vh] overflow-y-auto"
-            style={{ boxShadow: '4px 4px 0 0 #415B8F' }}
-          >
-            <div className="border-t border-dotted border-[#415B8F]/25 mb-4" />
+        <div
+          className="bg-white rounded-xl border-2 border-[#415B8F] px-6 pt-6 pb-6 max-h-[85vh] overflow-y-auto"
+          style={{ boxShadow: '4px 4px 0 0 #415B8F' }}
+        >
+          <h2 className="menu-card-title mb-3">Add Recipe</h2>
+          <div className="border-t border-dotted border-[#415B8F]/25 mb-4" />
 
             <div className="space-y-4">
               {/* Name */}
@@ -142,12 +136,22 @@ export function AddRecipeModal({ open, onClose, userId }: AddRecipeModalProps) {
                         onChange={(e) => updateIngredient(i, 'amount', e.target.value)}
                         className="w-16"
                       />
-                      <Input
-                        placeholder="Unit"
+                      <Select
                         value={ing.unit}
-                        onChange={(e) => updateIngredient(i, 'unit', e.target.value)}
-                        className="w-16"
-                      />
+                        onValueChange={(v) => updateIngredient(i, 'unit', v)}
+                      >
+                        <SelectTrigger className="w-24">
+                          <SelectValue placeholder="Unit" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="g">g</SelectItem>
+                          <SelectItem value="ml">ml</SelectItem>
+                          <SelectItem value="dl">dl</SelectItem>
+                          <SelectItem value="pcs">pcs</SelectItem>
+                          <SelectItem value="tsp">tsp</SelectItem>
+                          <SelectItem value="tbsp">tbsp</SelectItem>
+                        </SelectContent>
+                      </Select>
                       <Button
                         type="button"
                         variant="ghost"
@@ -187,7 +191,6 @@ export function AddRecipeModal({ open, onClose, userId }: AddRecipeModalProps) {
               </div>
             </div>
           </div>
-        </div>
       </DialogContent>
     </Dialog>
   )

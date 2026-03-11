@@ -43,7 +43,8 @@ export function PlannerBoard() {
   return (
     <div className="flex flex-col h-full">
       {/* Week navigation header */}
-      <div className="flex items-center justify-between px-4 lg:px-6 py-4 border-b border-border bg-card/50">
+      <div className="border-b border-border bg-card/50 px-4 lg:px-6 py-4">
+      <div className="max-w-5xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={goToPrevWeek}>
@@ -80,9 +81,11 @@ export function PlannerBoard() {
           <span className="sm:hidden">Generate</span>
         </Button>
       </div>
+      </div>
 
       {/* Grid */}
       <div className="flex-1 overflow-auto px-4 lg:px-6 py-4">
+        <div className="max-w-5xl mx-auto">
         {/* Empty state */}
         {!isLoading && !isGenerating && totalMeals === 0 && (
           <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -114,6 +117,7 @@ export function PlannerBoard() {
             }
           />
         )}
+        </div>
       </div>
 
       {/* Recipe detail dialog */}

@@ -166,9 +166,11 @@ export async function generateWeek(
     }
   }
 
+  console.log('[generateWeek] fetching meals from MealDB...')
   const meals = await Promise.all(
     slots.map((s) => fetchMealForSlot(s.mealType))
   )
+  console.log('[generateWeek] fetched meals:', meals.filter(Boolean).length, '/', meals.length)
 
   // Save recipes and upsert plan slots
   await Promise.all(
@@ -176,7 +178,9 @@ export async function generateWeek(
       const meal = meals[i]
       if (!meal) return
 
+      console.log('[generateWeek] saving recipe:', meal.id, meal.title)
       await saveRecipeWithId(meal)
+      console.log('[generateWeek] upserting slot:', s.day, s.mealType)
       await upsertSlot(userId, weekStart, s.day, s.mealType, meal.id, familySize)
     })
   )

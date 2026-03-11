@@ -39,6 +39,7 @@ export function Dashboard() {
     <div className="flex flex-col min-h-screen">
       <Header />
       <div className="flex-1 px-4 lg:px-6 py-6">
+        <div className="max-w-5xl mx-auto">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-foreground">
             Good {getTimeOfDay()}{profile?.familySize ? `, cooking for ${profile.familySize}` : ''}!
@@ -96,6 +97,7 @@ export function Dashboard() {
               }
             />
           </MenuCard>
+        </div>
         </div>
       </div>
     </div>

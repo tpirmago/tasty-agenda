@@ -23,7 +23,14 @@ export function Header({ onGenerateMeals, onAddRecipe, isGenerating }: HeaderPro
   const { user, signOut } = useAuth()
   const toggleSidebar = useUIStore((s) => s.toggleSidebar)
   const navigate = useNavigate()
-  const [_search, setSearch] = useState('')
+  const [search, setSearch] = useState('')
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && search.trim()) {
+      navigate(`/recipes?q=${encodeURIComponent(search.trim())}`)
+      setSearch('')
+    }
+  }
 
   const handleSignOut = async () => {
     await signOut()
@@ -71,7 +78,9 @@ export function Header({ onGenerateMeals, onAddRecipe, isGenerating }: HeaderPro
           <Input
             placeholder="Search meals..."
             className="pl-9 h-9 w-52 bg-muted border-0"
+            value={search}
             onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
           />
         </div>
 

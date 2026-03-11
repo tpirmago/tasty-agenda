@@ -19,6 +19,15 @@ const MEAL_LABELS: Record<MealType, string> = {
   lunch: 'Lunch',
   dinner: 'Dinner',
 }
+const DAY_LABELS: Record<DayOfWeek, string> = {
+  Mon: 'Monday',
+  Tue: 'Tuesday',
+  Wed: 'Wednesday',
+  Thu: 'Thursday',
+  Fri: 'Friday',
+  Sat: 'Saturday',
+  Sun: 'Sunday',
+}
 
 interface WeekGridProps {
   plan: WeeklyPlan
@@ -76,51 +85,49 @@ export const WeekGrid = memo(function WeekGrid({
 
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div className="overflow-x-auto">
-        <div className="min-w-[700px]">
-          {/* Day headers */}
-          <div className="grid grid-cols-8 gap-2 mb-3">
-            <div /> {/* empty label column */}
-            {DAYS.map((day) => (
-              <div key={day} className="text-center">
-                <p className="text-xs font-semibold text-foreground">{day}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Meal rows */}
-          {MEAL_TYPES.map((mealType) => (
-            <div key={mealType} className="grid grid-cols-8 gap-2 mb-3">
-              {/* Row label */}
-              <div className="flex items-center">
-                <span className="text-xs font-medium text-muted-foreground w-full text-right pr-2">
-                  {MEAL_LABELS[mealType]}
-                </span>
-              </div>
-
-              {/* Slots */}
-              {DAYS.map((day) => (
-                <MealSlot
-                  key={`${day}-${mealType}`}
-                  day={day}
-                  mealType={mealType}
-                  slot={plan[day][mealType]}
-                  isLoading={isLoading}
-                  onRemove={onRemoveSlot}
-                  onReplace={onReplaceSlot}
-                  onView={onViewSlot}
-                  onAddMeal={onAddMeal}
-                />
-              ))}
+      <div className="space-y-8 pb-4">
+        {DAYS.map((day) => (
+          <div key={day} className="relative mt-6 w-fit">
+            {/* Floating day title — MenuCard style */}
+            <div className="absolute top-0 left-6 -translate-y-1/2 px-3 bg-background z-10 whitespace-nowrap">
+              <h2 className="menu-card-title">{DAY_LABELS[day]}</h2>
             </div>
-          ))}
-        </div>
+
+            {/* Card body */}
+            <div
+              className="bg-white rounded-xl border-2 border-[#415B8F] px-10 pt-7 pb-10"
+              style={{ boxShadow: '4px 4px 0 0 #415B8F' }}
+            >
+              <div className="border-t border-dotted border-[#415B8F]/25 mb-7" />
+
+              <div className="flex gap-8">
+                {MEAL_TYPES.map((mealType) => (
+                  <div key={mealType} className="w-52">
+                    <p className="text-[10px] font-semibold text-[#415B8F]/70 mb-2 uppercase tracking-widest">
+                      {MEAL_LABELS[mealType]}
+                    </p>
+                    <MealSlot
+                      day={day}
+                      mealType={mealType}
+                      slot={plan[day][mealType]}
+                      isLoading={isLoading}
+                      onRemove={onRemoveSlot}
+                      onReplace={onReplaceSlot}
+                      onView={onViewSlot}
+                      onAddMeal={onAddMeal}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Drag overlay */}
       <DragOverlay>
         {activeDragSlot?.recipe && (
-          <div className="w-32 opacity-90 shadow-2xl rotate-2">
+          <div className="w-36 opacity-90 shadow-2xl rotate-2">
             <MealCard
               recipe={activeDragSlot.recipe}
               portions={activeDragSlot.portions}
