@@ -15,7 +15,7 @@ import type { DietPreference } from '@/types/user'
 const DIET_OPTIONS: { value: DietPreference; label: string }[] = [
   { value: 'vegetarian', label: 'Vegetarian' },
   { value: 'vegan', label: 'Vegan' },
-  { value: 'gluten-free', label: 'Gluten-free' },
+  { value: 'no restrictions', label: 'No restrictions' },
 ]
 
 export function SettingsPage() {

@@ -4,6 +4,7 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { MenuCard } from '@/components/ui/menu-card'
 import { Badge } from '@/components/ui/badge'
+import { BrandHeader } from '@/components/ui/brand-header'
 import { supabase } from '@/services/supabase/client'
 import { useAuth } from '@/features/auth/useAuth'
 import { cn } from '@/lib/utils'
@@ -12,8 +13,7 @@ import type { DietPreference } from '@/types/user'
 const DIET_OPTIONS: { value: DietPreference; label: string }[] = [
   { value: 'vegetarian', label: 'Vegetarian' },
   { value: 'vegan', label: 'Vegan' },
-  { value: 'gluten-free', label: 'Gluten-free' },
-  { value: 'lactose-free', label: 'Lactose-free' },
+  { value: 'no restrictions', label: 'No restrictions' },
 ]
 
 export function Onboarding() {
@@ -61,9 +61,7 @@ export function Onboarding() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12">
-      <div className="flex items-center gap-2 mb-10">
-        <span className="text-2xl font-bold text-foreground">Tasty Agenda</span>
-      </div>
+      <BrandHeader />
 
       <div className="flex items-center gap-2 mb-8">
         {[1, 2].map((s) => (
