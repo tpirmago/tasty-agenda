@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { supabase } from '@/services/supabase/client'
 import { useAuth } from '@/features/auth/useAuth'
+import { useQueryClient } from '@tanstack/react-query'
+import { updateAllPortions } from '@/features/weekly-planner/plannerService'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import type { DietPreference } from '@/types/user'
@@ -18,6 +20,7 @@ const DIET_OPTIONS: { value: DietPreference; label: string }[] = [
 
 export function SettingsPage() {
   const { user, profile } = useAuth()
+  const queryClient = useQueryClient()
   const [familySize, setFamilySize] = useState(profile?.familySize ?? 2)
   const [dietPrefs, setDietPrefs] = useState<DietPreference[]>(profile?.dietPreferences ?? [])
   const [isSaving, setIsSaving] = useState(false)
@@ -36,6 +39,9 @@ export function SettingsPage() {
         .from('profiles')
         .update({ family_size: familySize, diet_preferences: dietPrefs })
         .eq('user_id', user.id)
+      await updateAllPortions(user.id, familySize)
+      queryClient.invalidateQueries({ queryKey: ['plan'] })
+      queryClient.invalidateQueries({ queryKey: ['shopping'] })
       toast.success('Settings saved!')
     } catch {
       toast.error('Failed to save settings')

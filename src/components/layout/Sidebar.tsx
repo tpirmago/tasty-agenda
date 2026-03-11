@@ -32,7 +32,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
   return (
     <aside className="flex flex-col w-60 min-h-screen bg-primary">
       <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
-        <span className="font-semibold text-lg text-white">Tasty Agenda</span>
+        <NavLink to="/dashboard" className="font-semibold text-lg text-white hover:text-white/80 transition-colors">Tasty Agenda</NavLink>
         {onClose && (
           <button onClick={onClose} className="text-white/60 hover:text-white">
             <X size={18} />

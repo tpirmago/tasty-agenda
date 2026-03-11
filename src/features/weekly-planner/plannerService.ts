@@ -154,6 +154,14 @@ export async function moveSlot(
   }
 }
 
+export async function updateAllPortions(userId: string, portions: number): Promise<void> {
+  const { error } = await supabase
+    .from('weekly_plan')
+    .update({ portions })
+    .eq('user_id', userId)
+  if (error) throw error
+}
+
 export async function generateWeek(
   userId: string,
   weekStart: string,
