@@ -49,7 +49,7 @@ export const MealCard = memo(function MealCard({
       </div>
 
       {/* Image */}
-      <div className="relative h-24 w-full bg-muted overflow-hidden">
+      <div className="relative h-32 w-full bg-muted overflow-hidden">
         {recipe.image ? (
           <img
             src={recipe.image}

@@ -87,7 +87,7 @@ export const WeekGrid = memo(function WeekGrid({
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="space-y-8 pb-4">
         {DAYS.map((day) => (
-          <div key={day} className="relative mt-6 w-[768px]">
+          <div key={day} className="relative mt-6 w-full">
             {/* Floating day title — MenuCard style */}
             <div className="absolute top-0 left-6 -translate-y-1/2 px-3 bg-background z-10 whitespace-nowrap">
               <h2 className="menu-card-title">{DAY_LABELS[day]}</h2>
@@ -102,7 +102,7 @@ export const WeekGrid = memo(function WeekGrid({
 
               <div className="flex gap-8">
                 {MEAL_TYPES.map((mealType) => (
-                  <div key={mealType} className="w-52 flex-shrink-0">
+                  <div key={mealType} className="flex-1 min-w-0">
                     <p className="text-[10px] font-semibold text-[#415B8F]/70 mb-2 uppercase tracking-widest">
                       {MEAL_LABELS[mealType]}
                     </p>
