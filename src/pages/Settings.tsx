@@ -13,7 +13,6 @@ const DIET_OPTIONS: { value: DietPreference; label: string }[] = [
   { value: 'vegetarian', label: 'Vegetarian' },
   { value: 'vegan', label: 'Vegan' },
   { value: 'gluten-free', label: 'Gluten-free' },
-  { value: 'lactose-free', label: 'Lactose-free' },
 ]
 
 export function SettingsPage() {

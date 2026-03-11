@@ -29,7 +29,7 @@ export function ShoppingGroup({ category, items, onToggle }: ShoppingGroupProps)
 
   return (
     <MenuCard
-      className="w-fit min-w-[480px]"
+      className="w-full"
       title={
         <span className="flex items-center gap-2">
           <Icon size={14} />
@@ -52,7 +52,7 @@ export function ShoppingGroup({ category, items, onToggle }: ShoppingGroupProps)
       </button>
 
       {open && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-2 gap-y-0">
           {items.map((item) => (
             <ShoppingItem key={item.ids.join('-')} item={item} onToggle={onToggle} />
           ))}
