@@ -100,12 +100,12 @@ export const WeekGrid = memo(function WeekGrid({
 
             {/* Card body */}
             <div
-              className="bg-white rounded-xl border-2 border-[#415B8F] px-10 pt-7 pb-10"
+              className="bg-white rounded-xl border-2 border-[#415B8F] px-4 sm:px-10 pt-7 pb-6 sm:pb-10"
               style={{ boxShadow: '4px 4px 0 0 #415B8F' }}
             >
-              <div className="border-t border-dotted border-[#415B8F]/25 mb-7" />
+              <div className="border-t border-dotted border-[#415B8F]/25 mb-4 sm:mb-7" />
 
-              <div className="flex gap-8">
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-8">
                 {MEAL_TYPES.map((mealType) => (
                   <div key={mealType} className="flex-1 min-w-0">
                     <p className="text-[10px] font-semibold text-[#415B8F]/70 mb-2 uppercase tracking-widest">

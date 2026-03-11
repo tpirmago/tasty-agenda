@@ -67,8 +67,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // onAuthStateChange handles subsequent events only (sign in, sign out, token refresh)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        // if (event === 'INITIAL_SESSION') return // handled by getSession above
+      async (event, session) => {
+        if (event === 'INITIAL_SESSION') return // handled by getSession above
         if (!mounted) return
         if (session?.user) {
           const profile = await fetchProfile(session.user.id)

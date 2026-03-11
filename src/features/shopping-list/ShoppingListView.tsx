@@ -45,27 +45,29 @@ export function ShoppingListView() {
     <div className="flex flex-col gap-4 px-4 lg:px-6 py-4">
       <div className="max-w-5xl mx-auto w-full flex flex-col gap-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
           <PageHeading>Shopping List</PageHeading>
-          <p className="text-sm text-muted-foreground">{label}</p>
+          <p className="text-sm text-muted-foreground mt-1">{label}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 shrink-0 pt-1">
           <Button
             size="sm"
+            variant="ghost"
             onClick={() => clearMutation.mutate()}
             disabled={checkedItems === 0 || clearMutation.isPending}
+            className="bg-[#415B8F] text-white hover:bg-[#415B8F]/15 hover:text-[#415B8F] disabled:opacity-100 disabled:bg-[#415B8F]/15 disabled:text-[#415B8F]/40"
           >
-            <Trash2 size={14} className="mr-1.5" />
-            Clear done
+            <Trash2 size={14} className="sm:mr-1.5" />
+            <span className="hidden sm:inline">Clear done</span>
           </Button>
           <Button
             size="sm"
             onClick={() => regenerateMutation.mutate()}
             disabled={regenerateMutation.isPending}
           >
-            <RefreshCw size={14} className={`mr-1.5 ${regenerateMutation.isPending ? 'animate-spin' : ''}`} />
-            Regenerate
+            <RefreshCw size={14} className={`sm:mr-1.5 ${regenerateMutation.isPending ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline">Regenerate</span>
           </Button>
         </div>
       </div>
@@ -83,12 +85,12 @@ export function ShoppingListView() {
 
       {/* Day tabs */}
       <Tabs value={shoppingDay} onValueChange={(v) => setShoppingDay(v as DayOfWeek | 'week')}>
-        <TabsList className="w-full overflow-x-auto flex-nowrap justify-start h-auto p-1 bg-muted/50">
+        <TabsList className="w-full overflow-x-auto flex-nowrap justify-start h-auto p-1 bg-[#415B8F]/15">
           {DAYS.map((day) => (
             <TabsTrigger
               key={day}
               value={day}
-              className="text-xs flex-shrink-0 px-3 py-1.5"
+              className="text-xs flex-shrink-0 px-3 py-1.5 text-[#415B8F]/70 data-[state=active]:bg-[#415B8F] data-[state=active]:text-white data-[state=active]:shadow-sm"
             >
               {DAY_LABELS[day]}
             </TabsTrigger>
@@ -100,14 +102,13 @@ export function ShoppingListView() {
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-10 w-full rounded-lg" />
+            <Skeleton key={i} className="h-10 w-full rounded-lg bg-[#f6b1b8]/30" />
           ))}
         </div>
       ) : totalItems === 0 ? (
-        <div className="text-center py-16">
-          <div className="text-5xl mb-4">🛒</div>
-          <h3 className="font-semibold text-foreground mb-2">No items yet</h3>
-          <p className="text-sm text-muted-foreground mb-4">
+        <div className="flex flex-col items-center justify-center text-center py-16">
+          <h3 className="menu-card-title mb-6">No items yet</h3>
+          <p className="text-sm text-muted-foreground mb-8 max-w-xs">
             Generate meals first, then click Regenerate to build your list.
           </p>
           <Button onClick={() => regenerateMutation.mutate()} disabled={regenerateMutation.isPending}>

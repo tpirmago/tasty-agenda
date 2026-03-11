@@ -1,19 +1,27 @@
 import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom'
+import { lazy, Suspense } from 'react'
 import { useAuth } from '@/features/auth/useAuth'
 import { AppShell } from '@/components/layout/AppShell'
-import { Login } from '@/pages/Login'
-import { Register } from '@/pages/Register'
-import { Onboarding } from '@/pages/Onboarding'
-import { Dashboard } from '@/pages/Dashboard'
-import { Planner } from '@/pages/Planner'
-import { ShoppingListPage } from '@/pages/ShoppingList'
-import { RecipesPage } from '@/pages/Recipes'
-import { SettingsPage } from '@/pages/Settings'
+
+const Login = lazy(() => import('@/pages/Login').then(m => ({ default: m.Login })))
+const Register = lazy(() => import('@/pages/Register').then(m => ({ default: m.Register })))
+const Onboarding = lazy(() => import('@/pages/Onboarding').then(m => ({ default: m.Onboarding })))
+const Dashboard = lazy(() => import('@/pages/Dashboard').then(m => ({ default: m.Dashboard })))
+const Planner = lazy(() => import('@/pages/Planner').then(m => ({ default: m.Planner })))
+const ShoppingListPage = lazy(() => import('@/pages/ShoppingList').then(m => ({ default: m.ShoppingListPage })))
+const RecipesPage = lazy(() => import('@/pages/Recipes').then(m => ({ default: m.RecipesPage })))
+const SettingsPage = lazy(() => import('@/pages/Settings').then(m => ({ default: m.SettingsPage })))
 
 const Spinner = () => (
   <div className="min-h-screen flex items-center justify-center">
     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
   </div>
+)
+
+const SuspenseWrapper = () => (
+  <Suspense fallback={<Spinner />}>
+    <Outlet />
+  </Suspense>
 )
 
 // Requires only a valid session (not full onboarding)
@@ -33,24 +41,29 @@ function OnboardedRoute() {
 }
 
 export const router = createBrowserRouter([
-  { path: '/login', element: <Login /> },
-  { path: '/register', element: <Register /> },
   {
-    element: <AuthRoute />,
+    element: <SuspenseWrapper />,
     children: [
-      { path: '/onboarding', element: <Onboarding /> },
+      { path: '/login', element: <Login /> },
+      { path: '/register', element: <Register /> },
       {
-        element: <OnboardedRoute />,
+        element: <AuthRoute />,
         children: [
+          { path: '/onboarding', element: <Onboarding /> },
           {
-            element: <AppShell />,
+            element: <OnboardedRoute />,
             children: [
-              { path: '/', element: <Navigate to="/planner" replace /> },
-              { path: '/dashboard', element: <Dashboard /> },
-              { path: '/planner', element: <Planner /> },
-              { path: '/recipes', element: <RecipesPage /> },
-              { path: '/shopping', element: <ShoppingListPage /> },
-              { path: '/settings', element: <SettingsPage /> },
+              {
+                element: <AppShell />,
+                children: [
+                  { path: '/', element: <Navigate to="/planner" replace /> },
+                  { path: '/dashboard', element: <Dashboard /> },
+                  { path: '/planner', element: <Planner /> },
+                  { path: '/recipes', element: <RecipesPage /> },
+                  { path: '/shopping', element: <ShoppingListPage /> },
+                  { path: '/settings', element: <SettingsPage /> },
+                ],
+              },
             ],
           },
         ],

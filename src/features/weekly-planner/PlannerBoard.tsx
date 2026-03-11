@@ -64,11 +64,11 @@ export function PlannerBoard() {
     <div className="flex flex-col h-full">
       {/* Week navigation header */}
       <div className="border-b border-border bg-card/50 px-4 lg:px-6 py-4">
-      <div className="max-w-5xl mx-auto flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <div className="max-w-5xl mx-auto flex items-center justify-between gap-2 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
           <div>
             <div className="w-fit">
-              <h2 className="text-xl font-bold" style={{ color: '#415B8F' }}>{label}</h2>
+              <h2 className="text-base sm:text-xl font-bold" style={{ color: '#415B8F' }}>{label}</h2>
               <svg width="100%" height="18" xmlns="http://www.w3.org/2000/svg" className="mt-1">
                 <defs>
                   <pattern id="wave-planner" x="0" y="0" width="42" height="18" patternUnits="userSpaceOnUse">
@@ -134,9 +134,8 @@ export function PlannerBoard() {
         {/* Empty state */}
         {!isLoading && !isGenerating && totalMeals === 0 && (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="text-6xl mb-4">🍽️</div>
-            <h3 className="text-lg font-semibold text-foreground mb-2">Your week is empty</h3>
-            <p className="text-muted-foreground text-sm mb-6 max-w-xs">
+            <h3 className="menu-card-title mb-6">Your week is empty</h3>
+            <p className="text-muted-foreground text-sm mb-8 max-w-xs">
               Generate a full week of delicious meals with one click, or add meals manually.
             </p>
             <Button onClick={() => generateMutation.mutate()} disabled={isGenerating}>

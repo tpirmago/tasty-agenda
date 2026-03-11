@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Link } from 'react-router-dom'
+import { MailCheck } from 'lucide-react'
 import { useAuth } from './useAuth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -22,6 +24,7 @@ type FormData = z.infer<typeof schema>
 
 export function RegisterForm() {
   const { signUp } = useAuth()
+  const [registeredEmail, setRegisteredEmail] = useState<string | null>(null)
   const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm<FormData>({
     resolver: zodResolver(schema),
   })
@@ -29,9 +32,36 @@ export function RegisterForm() {
   const onSubmit = async (data: FormData) => {
     try {
       await signUp(data.email, data.password)
+      setRegisteredEmail(data.email)
     } catch (err) {
       setError('root', { message: err instanceof Error ? err.message : 'Registration failed' })
     }
+  }
+
+  if (registeredEmail) {
+    return (
+      <MenuCard title="Check your email" className="w-full max-w-sm">
+        <div className="flex flex-col items-center text-center gap-4 py-2">
+          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+            <MailCheck size={22} className="text-primary" />
+          </div>
+          <div className="space-y-1">
+            <p className="text-sm text-foreground font-medium">Confirmation email sent</p>
+            <p className="text-sm text-muted-foreground">
+              We sent a confirmation link to{' '}
+              <span className="font-medium text-foreground">{registeredEmail}</span>.
+              Please check your inbox and click the link to activate your account.
+            </p>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Already confirmed?{' '}
+            <Link to="/login" className="text-primary font-medium hover:underline">
+              Sign in
+            </Link>
+          </p>
+        </div>
+      </MenuCard>
+    )
   }
 
   return (

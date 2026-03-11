@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Search, Utensils, Pencil, Trash2 } from 'lucide-react'
+import { Search, Utensils, Pencil, Trash2, Plus } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
 import { Header } from '@/components/layout/Header'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -25,6 +26,7 @@ export function RecipesPage() {
     if (q) setSearch(q)
   }, [searchParams])
   const [tab, setTab] = useState<'all' | 'custom' | 'mealdb'>('all')
+  const [addOpen, setAddOpen] = useState(false)
   const [editRecipe, setEditRecipe] = useState<Recipe | null>(null)
   const [viewRecipe, setViewRecipe] = useState<Recipe | null>(null)
 
@@ -64,7 +66,7 @@ export function RecipesPage() {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <div className="flex items-center rounded-md border border-input bg-muted/50 p-0.5 gap-0.5">
+          <div className="flex items-center rounded-md p-1 gap-0.5 bg-[#415B8F]/15">
             {(['all', 'custom', 'mealdb'] as const).map((t) => (
               <button
                 key={t}
@@ -72,8 +74,8 @@ export function RecipesPage() {
                 className={cn(
                   'px-3 h-8 rounded-[5px] text-sm font-medium transition-all whitespace-nowrap',
                   tab === t
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
+                    ? 'bg-[#415B8F] text-white shadow-sm'
+                    : 'text-[#415B8F]/70 hover:text-[#415B8F]'
                 )}
               >
                 {t === 'all' ? 'All' : t === 'custom' ? 'My recipes' : 'From MealDB'}
@@ -90,15 +92,21 @@ export function RecipesPage() {
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-16">
-<h3 className="font-semibold text-foreground mb-2">
+          <div className="flex flex-col items-center justify-center text-center py-16">
+            <h3 className="menu-card-title mb-6">
               {search ? 'No recipes found' : 'No recipes yet'}
             </h3>
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="text-sm text-muted-foreground mb-8 max-w-xs">
               {search
                 ? 'Try a different search term'
                 : 'Add your first recipe or generate meals to build your collection'}
             </p>
+            {!search && (
+              <Button onClick={() => setAddOpen(true)}>
+                <Plus size={16} className="mr-2" />
+                Add recipe
+              </Button>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -122,6 +130,11 @@ export function RecipesPage() {
         </div>
       </div>
 
+      <AddRecipeModal
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        userId={user?.id ?? ''}
+      />
       <AddRecipeModal
         open={!!editRecipe}
         onClose={() => setEditRecipe(null)}
