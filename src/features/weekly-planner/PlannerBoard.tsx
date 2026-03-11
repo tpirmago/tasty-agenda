@@ -66,6 +66,22 @@ export function PlannerBoard() {
       <div className="border-b border-border bg-card/50 px-4 lg:px-6 py-4">
       <div className="max-w-5xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-3">
+          <div>
+            <div className="w-fit">
+              <h2 className="text-xl font-bold" style={{ color: '#415B8F' }}>{label}</h2>
+              <svg width="100%" height="18" xmlns="http://www.w3.org/2000/svg" className="mt-1">
+                <defs>
+                  <pattern id="wave-planner" x="0" y="0" width="42" height="18" patternUnits="userSpaceOnUse">
+                    <path d="M0 9 C14 2, 28 16, 42 9" stroke="#415B8F" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+                  </pattern>
+                </defs>
+                <rect width="100%" height="18" fill="url(#wave-planner)" />
+              </svg>
+            </div>
+            {totalMeals > 0 && (
+              <p className="text-xs text-muted-foreground mt-0.5">{totalMeals} of 21 meals planned</p>
+            )}
+          </div>
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={goToPrevWeek}>
               <ChevronLeft size={16} />
@@ -73,12 +89,6 @@ export function PlannerBoard() {
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={goToNextWeek}>
               <ChevronRight size={16} />
             </Button>
-          </div>
-          <div>
-            <h2 className="font-semibold text-foreground text-sm lg:text-base">{label}</h2>
-            {totalMeals > 0 && (
-              <p className="text-xs text-muted-foreground">{totalMeals} of 21 meals planned</p>
-            )}
           </div>
           {!isCurrentWeek && (
             <Button size="sm" onClick={goToCurrentWeek} className="text-xs h-7">

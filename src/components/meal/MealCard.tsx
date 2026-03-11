@@ -88,7 +88,7 @@ export const MealCard = memo(function MealCard({
           variant="secondary"
           className="absolute bottom-1.5 right-1.5 text-xs px-1.5 py-0"
         >
-          {portions} ppl
+          {portions} servings
         </Badge>
       </div>
 
