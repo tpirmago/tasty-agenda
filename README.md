@@ -1,73 +1,68 @@
-# React + TypeScript + Vite
+# Tasty Agenda
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A meal planning app that helps you organize your week, build a shopping list automatically, and keep your favorite recipes in one place.
 
-Currently, two official plugins are available:
+## What it does
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Weekly planner** — plan breakfast, lunch, and dinner for each day. Generate a full week with one click or fill it manually. Drag meals between slots to rearrange.
+- **Shopping list** — auto-generated from your weekly plan, grouped by day. Check off items as you shop.
+- **Recipe book** — save your own recipes with photos, or browse and favorite dishes from MealDB.
+- **Dashboard** — a quick overview of the week: meals planned, items to buy, family size, and recipe count.
 
-## React Compiler
+## Tech stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React 19 + TypeScript
+- Vite + Tailwind CSS v4
+- shadcn/ui components
+- Supabase (auth, database, image storage)
+- TanStack Query for server state
+- Zustand for client state
+- dnd-kit for drag & drop
+- Vercel Analytics
 
-## Expanding the ESLint configuration
+## Getting started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+**1. Clone and install**
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+**2. Set up environment variables**
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Create a `.env.local` file in the root:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+**3. Set up Supabase**
+
+You'll need the following tables: `profiles`, `recipes`, `weekly_plan`, `shopping_list`.
+Also create a storage bucket called `recipe-images` with user-scoped RLS policies.
+
+**4. Run locally**
+
+```bash
+npm run dev
+```
+
+**5. Build**
+
+```bash
+npm run build
+```
+
+## Project structure
+
+```
+src/
+├── components/       # Shared UI components (layout, meal cards, planner grid)
+├── features/         # Feature modules (auth, recipes, planner, shopping list)
+├── pages/            # Route-level pages
+├── hooks/            # Shared hooks
+├── store/            # Zustand stores
+├── types/            # TypeScript types
+└── utils/            # Utilities (date helpers, etc.)
 ```
