@@ -10,7 +10,7 @@ import {
 import type { DayOfWeek, MealType, WeeklyPlan } from '@/types/planner'
 import type { Recipe } from '@/types/recipe'
 
-export function usePlanner(userId: string, weekStart: string, familySize: number) {
+export function usePlanner(userId: string, weekStart: string, familySize: number, dietPrefs: string[] = []) {
   const queryClient = useQueryClient()
   const queryKey = ['plan', userId, weekStart]
 
@@ -22,7 +22,7 @@ export function usePlanner(userId: string, weekStart: string, familySize: number
   })
 
   const generateMutation = useMutation({
-    mutationFn: () => generateWeek(userId, weekStart, familySize),
+    mutationFn: () => generateWeek(userId, weekStart, familySize, dietPrefs),
     onMutate: () => {
       toast.loading('Generating your week...', { id: 'generate' })
     },

@@ -157,7 +157,8 @@ export async function moveSlot(
 export async function generateWeek(
   userId: string,
   weekStart: string,
-  familySize: number
+  familySize: number,
+  dietPrefs: string[] = []
 ): Promise<WeeklyPlan> {
   const slots: { day: DayOfWeek; mealType: MealType }[] = []
   for (const day of DAYS) {
@@ -169,7 +170,7 @@ export async function generateWeek(
   const meals: (Awaited<ReturnType<typeof fetchMealForSlot>>)[] = []
   for (const s of slots) {
     try {
-      const meal = await fetchMealForSlot(s.mealType)
+      const meal = await fetchMealForSlot(s.mealType, dietPrefs)
       meals.push(meal)
     } catch (e) {
       console.warn('[generateWeek] fetchMealForSlot failed:', s, e)

@@ -115,7 +115,7 @@ export function ShoppingListView() {
           </Button>
         </div>
       ) : (
-        <div className="w-fit">
+        <div className="flex flex-col gap-6">
           {CATEGORY_ORDER.map((category) => {
             const items = grouped[category]
             if (!items?.length) return null

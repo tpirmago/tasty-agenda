@@ -26,9 +26,10 @@ export function PlannerBoard() {
     useWeekNavigation()
 
   const familySize = profile?.familySize ?? 2
+  const dietPrefs = profile?.dietPreferences ?? []
 
   const { plan, isLoading, isGenerating, generateMutation, removeMutation, moveMutation } =
-    usePlanner(user?.id ?? '', weekStart, familySize)
+    usePlanner(user?.id ?? '', weekStart, familySize, dietPrefs)
 
   const [viewSlot, setViewSlot] = useState<PlannerSlot | null>(null)
   const [replaceSlot, setReplaceSlot] = useState<PlannerSlot | null>(null)

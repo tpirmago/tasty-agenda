@@ -2,6 +2,7 @@ export type DietPreference =
   | 'vegetarian'
   | 'vegan'
   | 'gluten-free'
+  | 'lactose-free'
 
 export interface Profile {
   id: string

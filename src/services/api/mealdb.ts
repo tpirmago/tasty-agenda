@@ -9,6 +9,25 @@ export const MEAL_TYPE_CATEGORIES: Record<MealType, string[]> = {
   dinner: ['Beef', 'Pasta', 'Lamb', 'Pork', 'Goat'],
 }
 
+const DIET_CATEGORY_OVERRIDES: Record<string, Record<MealType, string[]>> = {
+  vegetarian: {
+    breakfast: ['Breakfast'],
+    lunch: ['Vegetarian', 'Side', 'Starter', 'Vegan'],
+    dinner: ['Pasta', 'Vegetarian', 'Side', 'Vegan'],
+  },
+  vegan: {
+    breakfast: ['Vegan', 'Side'],
+    lunch: ['Vegan', 'Side', 'Starter'],
+    dinner: ['Vegan', 'Side'],
+  },
+}
+
+function getCategoriesForDiet(mealType: MealType, dietPrefs: string[]): string[] {
+  if (dietPrefs.includes('vegan')) return DIET_CATEGORY_OVERRIDES.vegan[mealType]
+  if (dietPrefs.includes('vegetarian')) return DIET_CATEGORY_OVERRIDES.vegetarian[mealType]
+  return MEAL_TYPE_CATEGORIES[mealType]
+}
+
 function parseIngredients(meal: MealDBMeal): Ingredient[] {
   const results: Ingredient[] = []
   for (let i = 1; i <= 20; i++) {
@@ -55,8 +74,8 @@ async function fetchMealListByCategory(category: string): Promise<MealDBListItem
   return data.meals ?? []
 }
 
-export async function fetchMealForSlot(mealType: MealType): Promise<Recipe | null> {
-  const categories = MEAL_TYPE_CATEGORIES[mealType]
+export async function fetchMealForSlot(mealType: MealType, dietPrefs: string[] = []): Promise<Recipe | null> {
+  const categories = getCategoriesForDiet(mealType, dietPrefs)
   const category = categories[Math.floor(Math.random() * categories.length)]
 
   const list = await fetchMealListByCategory(category)
