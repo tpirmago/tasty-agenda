@@ -20,11 +20,16 @@ interface AuthContextValue extends AuthState {
 
 async function fetchProfile(userId: string): Promise<Profile | null> {
   try {
-    const { data, error } = await supabase
+    const profileTimeout = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('fetchProfile timeout')), 6000)
+    )
+    const profileQuery = supabase
       .from('profiles')
       .select('*')
       .eq('user_id', userId)
       .maybeSingle()
+
+    const { data, error } = await Promise.race([profileQuery, profileTimeout])
 
     if (error || !data) return null
 
@@ -53,17 +58,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let mounted = true
 
     // getSession handles the initial state (avoids INITIAL_SESSION lock contention)
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (!mounted) return
-      if (session?.user) {
-        const profile = await fetchProfile(session.user.id)
-        if (mounted) setState({ user: session.user, profile, isLoading: false })
-      } else {
+    const sessionTimeout = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('getSession timeout')), 8000)
+    )
+
+    Promise.race([supabase.auth.getSession(), sessionTimeout])
+      .then(async ({ data: { session } }) => {
+        if (!mounted) return
+        if (session?.user) {
+          const profile = await fetchProfile(session.user.id)
+          if (mounted) setState({ user: session.user, profile, isLoading: false })
+        } else {
+          if (mounted) setState({ user: null, profile: null, isLoading: false })
+        }
+      }).catch(() => {
         if (mounted) setState({ user: null, profile: null, isLoading: false })
-      }
-    }).catch(() => {
-      if (mounted) setState({ user: null, profile: null, isLoading: false })
-    })
+      })
 
     // onAuthStateChange handles subsequent events only (sign in, sign out, token refresh)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
