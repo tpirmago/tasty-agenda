@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Search, Plus, Utensils } from 'lucide-react'
+import { Search, Plus, Utensils, Pencil, Trash2 } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
 import { Header } from '@/components/layout/Header'
 import { Input } from '@/components/ui/input'
@@ -25,6 +25,7 @@ export function RecipesPage() {
   }, [searchParams])
   const [tab, setTab] = useState<'all' | 'custom' | 'mealdb'>('all')
   const [showAdd, setShowAdd] = useState(false)
+  const [editRecipe, setEditRecipe] = useState<Recipe | null>(null)
   const [viewRecipe, setViewRecipe] = useState<Recipe | null>(null)
 
   const { data: recipes = [], isLoading } = useUserRecipes(user?.id ?? '')
@@ -101,7 +102,8 @@ export function RecipesPage() {
                 key={recipe.id}
                 recipe={recipe}
                 onView={() => setViewRecipe(recipe)}
-                onDelete={() => deleteMutation.mutate(recipe.id)}
+                onEdit={recipe.source === 'custom' ? () => setEditRecipe(recipe) : undefined}
+                onDelete={recipe.source === 'custom' ? () => deleteMutation.mutate(recipe.id) : undefined}
               />
             ))}
           </div>
@@ -113,6 +115,13 @@ export function RecipesPage() {
         open={showAdd}
         onClose={() => setShowAdd(false)}
         userId={user?.id ?? ''}
+      />
+
+      <AddRecipeModal
+        open={!!editRecipe}
+        onClose={() => setEditRecipe(null)}
+        userId={user?.id ?? ''}
+        initialRecipe={editRecipe ?? undefined}
       />
 
       <RecipeDetailDialog
@@ -128,11 +137,13 @@ export function RecipesPage() {
 function RecipeCard({
   recipe,
   onView,
+  onEdit,
   onDelete,
 }: {
   recipe: Recipe
   onView: () => void
-  onDelete: () => void
+  onEdit?: () => void
+  onDelete?: () => void
 }) {
   return (
     <Card
@@ -147,18 +158,8 @@ function RecipeCard({
             <Utensils size={28} className="text-muted-foreground" />
           </div>
         )}
-        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Button
-            size="icon"
-            variant="destructive"
-            className="h-7 w-7"
-            onClick={(e: React.MouseEvent) => { e.stopPropagation(); onDelete() }}
-          >
-            ×
-          </Button>
-        </div>
       </div>
-      <CardContent className="p-3">
+      <CardContent className="p-3 relative">
         <p className="font-semibold text-sm line-clamp-2 text-foreground mb-1.5">{recipe.title}</p>
         <div className="flex gap-1.5 flex-wrap">
           {recipe.category && (
@@ -171,6 +172,32 @@ function RecipeCard({
             <Badge className="text-[10px] px-1.5 py-0">Custom</Badge>
           )}
         </div>
+
+        {(onEdit || onDelete) && (
+          <div
+            className="absolute bottom-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {onEdit && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onEdit() }}
+                className="p-1.5 rounded-lg bg-background/80 hover:bg-background text-foreground shadow-sm transition-colors"
+                title="Edit recipe"
+              >
+                <Pencil size={13} />
+              </button>
+            )}
+            {onDelete && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onDelete() }}
+                className="p-1.5 rounded-lg bg-background/80 hover:bg-red-100 text-red-500 shadow-sm transition-colors"
+                title="Delete recipe"
+              >
+                <Trash2 size={13} />
+              </button>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   )

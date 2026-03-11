@@ -79,6 +79,28 @@ export async function saveRecipeWithId(recipe: Recipe): Promise<Recipe> {
   return toRecipe(data as DBRecipe)
 }
 
+export async function updateRecipe(
+  id: string,
+  recipe: Omit<Recipe, 'id' | 'createdAt'>
+): Promise<Recipe> {
+  const { data, error } = await supabase
+    .from('recipes')
+    .update({
+      title: recipe.title,
+      image: recipe.image,
+      ingredients: recipe.ingredients,
+      instructions: recipe.instructions,
+      category: recipe.category,
+      area: recipe.area,
+    })
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) throw error
+  return toRecipe(data as DBRecipe)
+}
+
 export async function getRecipeById(id: string): Promise<Recipe | null> {
   const { data, error } = await supabase
     .from('recipes')

@@ -115,7 +115,7 @@ export function ShoppingListView() {
           </Button>
         </div>
       ) : (
-        <div>
+        <div className="w-fit">
           {CATEGORY_ORDER.map((category) => {
             const items = grouped[category]
             if (!items?.length) return null

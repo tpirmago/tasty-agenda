@@ -33,7 +33,7 @@ function toItem(r: DBShoppingItem): ShoppingItem {
 export async function generateShoppingList(
   userId: string,
   weekStart: string,
-  familySize: number
+  _familySize: number
 ): Promise<ShoppingItem[]> {
   const plan = await getWeekPlan(userId, weekStart)
 

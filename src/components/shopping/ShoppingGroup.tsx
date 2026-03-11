@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ChevronDown, ChevronRight, Beef, Milk, Salad, Package, Croissant, Snowflake, Circle } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
+import { MenuCard } from '@/components/ui/menu-card'
 import { ShoppingItem } from './ShoppingItem'
 import type { GroceryCategory, MergedShoppingItem } from '@/types/shopping'
 
@@ -28,15 +28,19 @@ export function ShoppingGroup({ category, items, onToggle }: ShoppingGroupProps)
   const checkedCount = items.filter((i) => i.checked).length
 
   return (
-    <div className="mb-3">
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors"
-      >
-        <Icon size={16} className="text-muted-foreground" />
-        <span className="flex-1 text-sm font-semibold text-foreground text-left">
+    <MenuCard
+      className="w-fit min-w-[480px]"
+      title={
+        <span className="flex items-center gap-2">
+          <Icon size={14} />
           {config.label}
         </span>
+      }
+    >
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between mb-3 hover:opacity-70 transition-opacity"
+      >
         <Badge variant="secondary" className="text-xs px-1.5">
           {checkedCount}/{items.length}
         </Badge>
@@ -48,13 +52,12 @@ export function ShoppingGroup({ category, items, onToggle }: ShoppingGroupProps)
       </button>
 
       {open && (
-        <div className={cn('ml-2 border-l border-border/40 pl-3 grid grid-cols-1 sm:grid-cols-2 gap-x-4')}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
           {items.map((item) => (
             <ShoppingItem key={item.ids.join('-')} item={item} onToggle={onToggle} />
           ))}
         </div>
       )}
-    </div>
+    </MenuCard>
   )
 }
-

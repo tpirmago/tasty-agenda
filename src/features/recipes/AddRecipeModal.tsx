@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, Minus, Upload } from 'lucide-react'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
@@ -6,18 +6,19 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { saveRecipe, uploadRecipeImage } from './recipeService'
+import { saveRecipe, updateRecipe, uploadRecipeImage } from './recipeService'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import type { Ingredient } from '@/types/recipe'
+import type { Ingredient, Recipe } from '@/types/recipe'
 
 interface AddRecipeModalProps {
   open: boolean
   onClose: () => void
   userId: string
+  initialRecipe?: Recipe
 }
 
-export function AddRecipeModal({ open, onClose, userId }: AddRecipeModalProps) {
+export function AddRecipeModal({ open, onClose, userId, initialRecipe }: AddRecipeModalProps) {
   const queryClient = useQueryClient()
   const [title, setTitle] = useState('')
   const [ingredients, setIngredients] = useState<Ingredient[]>([{ name: '', amount: '', unit: '' }])
@@ -25,6 +26,25 @@ export function AddRecipeModal({ open, onClose, userId }: AddRecipeModalProps) {
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+
+  const isEditing = !!initialRecipe
+
+  // Populate form when opening for edit
+  useEffect(() => {
+    if (open && initialRecipe) {
+      setTitle(initialRecipe.title)
+      setIngredients(initialRecipe.ingredients.length ? initialRecipe.ingredients : [{ name: '', amount: '', unit: '' }])
+      setInstructions(initialRecipe.instructions ?? '')
+      setImagePreview(initialRecipe.image ?? null)
+      setImageFile(null)
+    } else if (open && !initialRecipe) {
+      setTitle('')
+      setIngredients([{ name: '', amount: '', unit: '' }])
+      setInstructions('')
+      setImagePreview(null)
+      setImageFile(null)
+    }
+  }, [open, initialRecipe])
 
   const addIngredient = () => setIngredients((prev) => [...prev, { name: '', amount: '', unit: '' }])
   const removeIngredient = (i: number) =>
@@ -35,18 +55,13 @@ export function AddRecipeModal({ open, onClose, userId }: AddRecipeModalProps) {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    if (imagePreview) URL.revokeObjectURL(imagePreview)
+    if (imagePreview && !initialRecipe?.image) URL.revokeObjectURL(imagePreview)
     setImageFile(file)
     setImagePreview(URL.createObjectURL(file))
   }
 
   const handleClose = () => {
-    if (imagePreview) URL.revokeObjectURL(imagePreview)
-    setTitle('')
-    setIngredients([{ name: '', amount: '', unit: '' }])
-    setInstructions('')
-    setImageFile(null)
-    setImagePreview(null)
+    if (imagePreview && imageFile) URL.revokeObjectURL(imagePreview)
     onClose()
   }
 
@@ -57,27 +72,39 @@ export function AddRecipeModal({ open, onClose, userId }: AddRecipeModalProps) {
     }
     setIsSaving(true)
     try {
-      let image: string | null = null
+      let image: string | null = initialRecipe?.image ?? null
       if (imageFile) {
         image = await uploadRecipeImage(imageFile, userId)
       }
       const validIngredients = ingredients.filter((i) => i.name.trim())
-      await saveRecipe(
-        {
+      if (isEditing && initialRecipe) {
+        await updateRecipe(initialRecipe.id, {
           title: title.trim(),
           image,
           ingredients: validIngredients,
           instructions: instructions.trim() || null,
           source: 'custom',
           createdBy: userId,
-        },
-        userId
-      )
+        })
+        toast.success('Recipe updated!')
+      } else {
+        await saveRecipe(
+          {
+            title: title.trim(),
+            image,
+            ingredients: validIngredients,
+            instructions: instructions.trim() || null,
+            source: 'custom',
+            createdBy: userId,
+          },
+          userId
+        )
+        toast.success('Recipe saved!')
+      }
       queryClient.invalidateQueries({ queryKey: ['recipes', userId] })
-      toast.success('Recipe saved!')
       handleClose()
     } catch {
-      toast.error('Failed to save recipe')
+      toast.error(isEditing ? 'Failed to update recipe' : 'Failed to save recipe')
     } finally {
       setIsSaving(false)
     }
@@ -93,7 +120,7 @@ export function AddRecipeModal({ open, onClose, userId }: AddRecipeModalProps) {
           className="bg-white rounded-xl border-2 border-[#415B8F] px-6 pt-6 pb-6 max-h-[85vh] overflow-y-auto"
           style={{ boxShadow: '4px 4px 0 0 #415B8F' }}
         >
-          <h2 className="menu-card-title mb-3">Add Recipe</h2>
+          <h2 className="menu-card-title mb-3">{isEditing ? 'Edit Recipe' : 'Add Recipe'}</h2>
           <div className="border-t border-dotted border-[#415B8F]/25 mb-4" />
 
             <div className="space-y-4">
@@ -186,7 +213,7 @@ export function AddRecipeModal({ open, onClose, userId }: AddRecipeModalProps) {
                   Cancel
                 </Button>
                 <Button className="flex-1" onClick={handleSave} disabled={isSaving}>
-                  {isSaving ? 'Saving...' : 'Save recipe'}
+                  {isSaving ? 'Saving...' : isEditing ? 'Update recipe' : 'Save recipe'}
                 </Button>
               </div>
             </div>
