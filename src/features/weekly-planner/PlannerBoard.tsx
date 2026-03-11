@@ -17,6 +17,7 @@ import { ReplaceMealDialog } from './ReplaceMealDialog'
 import { usePlanner } from './usePlanner'
 import { useWeekNavigation } from '@/hooks/useWeekNavigation'
 import { useAuth } from '@/features/auth/useAuth'
+import { useFavoriteIds, useToggleFavorite } from '@/features/recipes/useFavorites'
 import type { DayOfWeek, MealType, PlannerSlot } from '@/types/planner'
 import { cn } from '@/lib/utils'
 
@@ -30,6 +31,13 @@ export function PlannerBoard() {
 
   const { plan, isLoading, isGenerating, generateMutation, removeMutation, moveMutation } =
     usePlanner(user?.id ?? '', weekStart, familySize, dietPrefs)
+
+  const favoriteIds = useFavoriteIds(user?.id ?? '')
+  const toggleFavoriteMutation = useToggleFavorite(user?.id ?? '')
+
+  const handleFavorite = (recipeId: string) => {
+    toggleFavoriteMutation.mutate({ recipeId, isFavorited: favoriteIds.has(recipeId) })
+  }
 
   const [viewSlot, setViewSlot] = useState<PlannerSlot | null>(null)
   const [replaceSlot, setReplaceSlot] = useState<PlannerSlot | null>(null)
@@ -73,7 +81,7 @@ export function PlannerBoard() {
             )}
           </div>
           {!isCurrentWeek && (
-            <Button variant="outline" size="sm" onClick={goToCurrentWeek} className="text-xs h-7">
+            <Button size="sm" onClick={goToCurrentWeek} className="text-xs h-7">
               <CalendarDays size={12} className="mr-1" />
               Today
             </Button>
@@ -83,7 +91,6 @@ export function PlannerBoard() {
         {totalMeals > 0 ? (
           <Button
             size="sm"
-            variant="outline"
             onClick={() => setConfirmRegenerate(true)}
             disabled={isGenerating}
             className={cn('flex items-center gap-2', isGenerating && 'opacity-75')}
@@ -134,6 +141,7 @@ export function PlannerBoard() {
             plan={currentPlan}
             weekStart={weekStart}
             isLoading={isLoading || isGenerating}
+            favoriteIds={favoriteIds}
             onRemoveSlot={(id) => removeMutation.mutate(id)}
             onReplaceSlot={(slot) => setReplaceSlot(slot)}
             onViewSlot={(slot) => setViewSlot(slot)}
@@ -143,6 +151,7 @@ export function PlannerBoard() {
             onMoveSlot={(slotId, targetDay, targetMealType) =>
               moveMutation.mutate({ slotId, targetDay, targetMealType })
             }
+            onFavorite={handleFavorite}
           />
         )}
         </div>

@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Shuffle, Trash2, GripVertical, Utensils } from 'lucide-react'
+import { Shuffle, Trash2, GripVertical, Utensils, Heart } from 'lucide-react'
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
@@ -10,9 +10,11 @@ interface MealCardProps {
   recipe: Recipe
   portions: number
   isDragging?: boolean
+  isFavorited?: boolean
   onRemove?: () => void
   onReplace?: () => void
   onView?: () => void
+  onFavorite?: () => void
   dragHandleProps?: Record<string, unknown>
 }
 
@@ -20,9 +22,11 @@ export const MealCard = memo(function MealCard({
   recipe,
   portions,
   isDragging,
+  isFavorited,
   onRemove,
   onReplace,
   onView,
+  onFavorite,
   dragHandleProps,
 }: MealCardProps) {
   const [hovered, setHovered] = useState(false)
@@ -60,6 +64,23 @@ export const MealCard = memo(function MealCard({
           <div className="w-full h-full flex items-center justify-center">
             <Utensils size={24} className="text-muted-foreground" />
           </div>
+        )}
+
+        {/* Heart / favorite button */}
+        {onFavorite && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onFavorite() }}
+            className={cn(
+              'absolute top-2 right-2 z-10 p-1.5 rounded-full bg-background/80 shadow-sm transition-all',
+              isFavorited || hovered ? 'opacity-100' : 'opacity-0'
+            )}
+            title={isFavorited ? 'Remove from recipes' : 'Save to recipes'}
+          >
+            <Heart
+              size={13}
+              className={cn(isFavorited ? 'fill-red-500 text-red-500' : 'text-foreground')}
+            />
+          </button>
         )}
 
         {/* Portions badge */}

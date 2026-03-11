@@ -1,12 +1,24 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { getUserRecipes, saveRecipe, deleteRecipe } from './recipeService'
+import { getFavoriteRecipes } from './favoriteService'
 import type { Recipe } from '@/types/recipe'
 
 export function useUserRecipes(userId: string) {
   return useQuery({
     queryKey: ['recipes', userId],
-    queryFn: () => getUserRecipes(userId),
+    queryFn: async () => {
+      const [owned, favorited] = await Promise.all([
+        getUserRecipes(userId),
+        getFavoriteRecipes(userId),
+      ])
+      const seen = new Set<string>()
+      return [...owned, ...favorited].filter((r) => {
+        if (seen.has(r.id)) return false
+        seen.add(r.id)
+        return true
+      })
+    },
     enabled: !!userId,
   })
 }

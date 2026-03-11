@@ -12,10 +12,12 @@ interface MealSlotProps {
   mealType: MealType
   slot: PlannerSlot | null
   isLoading?: boolean
+  isFavorited?: boolean
   onRemove?: (id: string) => void
   onReplace?: (slot: PlannerSlot) => void
   onView?: (slot: PlannerSlot) => void
   onAddMeal?: (day: DayOfWeek, mealType: MealType) => void
+  onFavorite?: (recipeId: string) => void
 }
 
 export function MealSlot({
@@ -23,10 +25,12 @@ export function MealSlot({
   mealType,
   slot,
   isLoading,
+  isFavorited,
   onRemove,
   onReplace,
   onView,
   onAddMeal,
+  onFavorite,
 }: MealSlotProps) {
   const droppableId = `${day}-${mealType}`
 
@@ -81,9 +85,11 @@ export function MealSlot({
         recipe={slot.recipe}
         portions={slot.portions}
         isDragging={isDragging}
+        isFavorited={isFavorited}
         onRemove={() => onRemove?.(slot.id)}
         onReplace={() => onReplace?.(slot)}
         onView={() => onView?.(slot)}
+        onFavorite={onFavorite ? () => onFavorite(slot.recipe!.id) : undefined}
         dragHandleProps={listeners}
       />
     </div>

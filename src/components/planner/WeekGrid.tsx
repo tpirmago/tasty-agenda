@@ -33,22 +33,26 @@ interface WeekGridProps {
   plan: WeeklyPlan
   weekStart: string
   isLoading?: boolean
+  favoriteIds?: Set<string>
   onRemoveSlot: (id: string) => void
   onReplaceSlot: (slot: PlannerSlot) => void
   onViewSlot: (slot: PlannerSlot) => void
   onAddMeal: (day: DayOfWeek, mealType: MealType) => void
   onMoveSlot: (slotId: string, targetDay: DayOfWeek, targetMealType: MealType) => void
+  onFavorite?: (recipeId: string) => void
 }
 
 export const WeekGrid = memo(function WeekGrid({
   plan,
   weekStart: _weekStart,
   isLoading,
+  favoriteIds,
   onRemoveSlot,
   onReplaceSlot,
   onViewSlot,
   onAddMeal,
   onMoveSlot,
+  onFavorite,
 }: WeekGridProps) {
   const [activeDragSlot, setActiveDragSlot] = useState<PlannerSlot | null>(null)
 
@@ -111,10 +115,16 @@ export const WeekGrid = memo(function WeekGrid({
                       mealType={mealType}
                       slot={plan[day][mealType]}
                       isLoading={isLoading}
+                      isFavorited={
+                        plan[day][mealType]?.recipe
+                          ? favoriteIds?.has(plan[day][mealType]!.recipe!.id)
+                          : false
+                      }
                       onRemove={onRemoveSlot}
                       onReplace={onReplaceSlot}
                       onView={onViewSlot}
                       onAddMeal={onAddMeal}
+                      onFavorite={onFavorite}
                     />
                   </div>
                 ))}

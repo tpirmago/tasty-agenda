@@ -93,7 +93,6 @@ export function ReplaceMealDialog({
 
             <div className="space-y-3">
               <Button
-                variant="outline"
                 className="w-full"
                 onClick={handleRandom}
                 disabled={isReplacing}
@@ -121,7 +120,6 @@ export function ReplaceMealDialog({
                     {recipes.length === 0 && (
                       <Button
                         size="sm"
-                        variant="outline"
                         onClick={() => setShowAddRecipe(true)}
                       >
                         <Plus size={14} className="mr-1.5" />

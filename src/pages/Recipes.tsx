@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react'
-import { Search, Plus, Utensils, Pencil, Trash2 } from 'lucide-react'
+import { Search, Utensils, Pencil, Trash2 } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
 import { Header } from '@/components/layout/Header'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { cn } from '@/lib/utils'
+import { PageHeading } from '@/components/ui/page-heading'
 import { AddRecipeModal } from '@/features/recipes/AddRecipeModal'
 import { RecipeDetailDialog } from '@/components/meal/RecipeDetailDialog'
 import { useUserRecipes, useDeleteRecipe } from '@/features/recipes/useRecipes'
+import { useToggleFavorite, useFavoriteIds } from '@/features/recipes/useFavorites'
 import { useAuth } from '@/features/auth/useAuth'
 import type { Recipe } from '@/types/recipe'
 
@@ -24,12 +25,13 @@ export function RecipesPage() {
     if (q) setSearch(q)
   }, [searchParams])
   const [tab, setTab] = useState<'all' | 'custom' | 'mealdb'>('all')
-  const [showAdd, setShowAdd] = useState(false)
   const [editRecipe, setEditRecipe] = useState<Recipe | null>(null)
   const [viewRecipe, setViewRecipe] = useState<Recipe | null>(null)
 
   const { data: recipes = [], isLoading } = useUserRecipes(user?.id ?? '')
   const deleteMutation = useDeleteRecipe(user?.id ?? '')
+  const favoriteIds = useFavoriteIds(user?.id ?? '')
+  const toggleFavorite = useToggleFavorite(user?.id ?? '')
 
   const filtered = recipes.filter((r) => {
     const matchesSearch = r.title.toLowerCase().includes(search.toLowerCase())
@@ -42,13 +44,13 @@ export function RecipesPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header onAddRecipe={() => setShowAdd(true)} />
+      <Header />
 
       <div className="flex-1 px-4 lg:px-6 py-4">
         <div className="max-w-5xl mx-auto">
         {/* Page header */}
         <div className="mb-4">
-          <h1 className="text-xl font-bold text-foreground">Recipes</h1>
+          <PageHeading>Recipes</PageHeading>
         </div>
 
         {/* Search + tabs */}
@@ -62,13 +64,22 @@ export function RecipesPage() {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
-            <TabsList>
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="custom">My recipes</TabsTrigger>
-              <TabsTrigger value="mealdb">From MealDB</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <div className="flex items-center rounded-md border border-input bg-muted/50 p-0.5 gap-0.5">
+            {(['all', 'custom', 'mealdb'] as const).map((t) => (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                className={cn(
+                  'px-3 h-8 rounded-[5px] text-sm font-medium transition-all whitespace-nowrap',
+                  tab === t
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                {t === 'all' ? 'All' : t === 'custom' ? 'My recipes' : 'From MealDB'}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Grid */}
@@ -88,12 +99,6 @@ export function RecipesPage() {
                 ? 'Try a different search term'
                 : 'Add your first recipe or generate meals to build your collection'}
             </p>
-            {!search && (
-              <Button onClick={() => setShowAdd(true)}>
-                <Plus size={14} className="mr-2" />
-                Add your first recipe
-              </Button>
-            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -103,19 +108,19 @@ export function RecipesPage() {
                 recipe={recipe}
                 onView={() => setViewRecipe(recipe)}
                 onEdit={recipe.source === 'custom' ? () => setEditRecipe(recipe) : undefined}
-                onDelete={recipe.source === 'custom' ? () => deleteMutation.mutate(recipe.id) : undefined}
+                onDelete={
+                  recipe.source === 'custom'
+                    ? () => deleteMutation.mutate(recipe.id)
+                    : favoriteIds.has(recipe.id)
+                      ? () => toggleFavorite.mutate({ recipeId: recipe.id, isFavorited: true })
+                      : undefined
+                }
               />
             ))}
           </div>
         )}
         </div>
       </div>
-
-      <AddRecipeModal
-        open={showAdd}
-        onClose={() => setShowAdd(false)}
-        userId={user?.id ?? ''}
-      />
 
       <AddRecipeModal
         open={!!editRecipe}

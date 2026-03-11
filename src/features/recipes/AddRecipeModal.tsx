@@ -191,7 +191,7 @@ export function AddRecipeModal({ open, onClose, userId, initialRecipe }: AddReci
                       </Button>
                     </div>
                   ))}
-                  <Button type="button" variant="outline" size="sm" onClick={addIngredient}>
+                  <Button type="button" size="sm" onClick={addIngredient}>
                     <Plus size={13} className="mr-1.5" /> Add ingredient
                   </Button>
                 </div>

@@ -5,11 +5,12 @@ interface MenuCardProps {
   title: React.ReactNode
   children: React.ReactNode
   className?: string
+  clickable?: boolean
 }
 
-export function MenuCard({ title, children, className }: MenuCardProps) {
+export function MenuCard({ title, children, className, clickable }: MenuCardProps) {
   return (
-    <div className={cn('relative mt-6', className)}>
+    <div className={cn('relative mt-6 group', clickable && 'cursor-pointer', className)}>
       {/* Title straddling the top border — "fieldset legend" effect */}
       <div className="absolute top-0 left-6 -translate-y-1/2 px-3 bg-[#FFFBF8] z-10 whitespace-nowrap">
         <h2 className="menu-card-title">{title}</h2>
@@ -17,7 +18,10 @@ export function MenuCard({ title, children, className }: MenuCardProps) {
 
       {/* Card body */}
       <div
-        className="bg-white rounded-xl border-2 border-[#415B8F] px-6 pt-7 pb-6"
+        className={cn(
+          'bg-white rounded-xl border-2 border-[#415B8F] px-6 pt-7 pb-6 transition-shadow',
+          clickable && 'group-hover:shadow-[6px_6px_0_0_#415B8F]'
+        )}
         style={{ boxShadow: '4px 4px 0 0 #415B8F' }}
       >
         {/* Dotted divider below the title */}

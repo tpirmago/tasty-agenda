@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Header } from '@/components/layout/Header'
+import { PageHeading } from '@/components/ui/page-heading'
 import { MenuCard } from '@/components/ui/menu-card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -49,7 +50,7 @@ export function SettingsPage() {
       <div className="flex-1 px-4 lg:px-6 py-6">
         <div className="max-w-5xl mx-auto">
         <div className="max-w-2xl">
-        <h1 className="text-xl font-bold text-foreground mb-10">Settings</h1>
+        <PageHeading className="mb-10">Settings</PageHeading>
 
         <div className="space-y-10">
           <MenuCard title="Family Size">

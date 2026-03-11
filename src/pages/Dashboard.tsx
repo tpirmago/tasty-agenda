@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom'
 import { Header } from '@/components/layout/Header'
-import { Button } from '@/components/ui/button'
 import { MenuCard, MenuCardRow } from '@/components/ui/menu-card'
+import { PageHeading } from '@/components/ui/page-heading'
 import { useAuth } from '@/features/auth/useAuth'
 import { useQuery } from '@tanstack/react-query'
 import { getWeekPlan } from '@/features/weekly-planner/plannerService'
 import { getShoppingList } from '@/features/shopping-list/shoppingService'
+import { useUserRecipes } from '@/features/recipes/useRecipes'
 import { formatWeekStart, getMonday } from '@/utils/dates'
 import { usePlannerStore } from '@/store/plannerStore'
 
@@ -33,6 +34,8 @@ export function Dashboard() {
       )
     : 0
 
+  const { data: allRecipes = [] } = useUserRecipes(user?.id ?? '')
+
   const pendingItems = shoppingItems.filter((i) => !i.checked).length
 
   return (
@@ -41,72 +44,53 @@ export function Dashboard() {
       <div className="flex-1 px-4 lg:px-6 py-6">
         <div className="max-w-5xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-foreground">
-            Good {getTimeOfDay()}{profile?.familySize ? `, cooking for ${profile.familySize}` : ''}!
-          </h1>
-          <p className="text-muted-foreground mt-1">Here's your meal planning overview.</p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <MenuCard title="Meals">
-            <MenuCardRow
-              label="This week"
-              description="of 21 slots filled"
-              value={<span className="text-3xl font-black">{mealCount}</span>}
-            />
-          </MenuCard>
-
-          <MenuCard title="Shopping">
-            <MenuCardRow
-              label="Items to buy"
-              description="pending this week"
-              value={<span className="text-3xl font-black">{pendingItems}</span>}
-            />
-          </MenuCard>
-
-          <MenuCard title="Family">
-            <MenuCardRow
-              label="Cooking for"
-              description="household members"
-              value={<span className="text-3xl font-black">{profile?.familySize ?? '—'}</span>}
-            />
-          </MenuCard>
+          <PageHeading size="2xl">What's on the menu today?</PageHeading>
+          <p className="text-muted-foreground mt-2">Here's your meal planning overview.</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <MenuCard title="Planner">
-            <MenuCardRow
-              label="Plan this week"
-              description="Generate meals automatically"
-              value={
-                <Button asChild size="sm">
-                  <Link to="/planner">Open</Link>
-                </Button>
-              }
-            />
-          </MenuCard>
+          <Link to="/planner" className="block">
+            <MenuCard title="Meals" clickable>
+              <MenuCardRow
+                label="This week"
+                description="of 21 slots filled"
+                value={<span className="text-3xl font-black">{mealCount}</span>}
+              />
+            </MenuCard>
+          </Link>
 
-          <MenuCard title="Shopping List">
-            <MenuCardRow
-              label="Weekly list"
-              description={pendingItems > 0 ? `${pendingItems} items remaining` : 'All done!'}
-              value={
-                <Button asChild size="sm" variant="outline">
-                  <Link to="/shopping">View</Link>
-                </Button>
-              }
-            />
-          </MenuCard>
+          <Link to="/shopping" className="block">
+            <MenuCard title="Shopping" clickable>
+              <MenuCardRow
+                label="Items to buy"
+                description="pending this week"
+                value={<span className="text-3xl font-black">{pendingItems}</span>}
+              />
+            </MenuCard>
+          </Link>
+
+          <Link to="/settings" className="block">
+            <MenuCard title="Family" clickable>
+              <MenuCardRow
+                label="Cooking for"
+                description="household members"
+                value={<span className="text-3xl font-black">{profile?.familySize ?? '—'}</span>}
+              />
+            </MenuCard>
+          </Link>
+
+          <Link to="/recipes" className="block">
+            <MenuCard title="Recipes" clickable>
+              <MenuCardRow
+                label="Saved recipes"
+                description="in your collection"
+                value={<span className="text-3xl font-black">{allRecipes.length}</span>}
+              />
+            </MenuCard>
+          </Link>
         </div>
         </div>
       </div>
     </div>
   )
-}
-
-function getTimeOfDay(): string {
-  const h = new Date().getHours()
-  if (h < 12) return 'morning'
-  if (h < 17) return 'afternoon'
-  return 'evening'
 }

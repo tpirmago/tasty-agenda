@@ -8,6 +8,7 @@ import { useShoppingList } from './useShoppingList'
 import { useUIStore } from '@/store/uiStore'
 import { useWeekNavigation } from '@/hooks/useWeekNavigation'
 import { useAuth } from '@/features/auth/useAuth'
+import { PageHeading } from '@/components/ui/page-heading'
 import type { DayOfWeek } from '@/types/planner'
 import type { GroceryCategory } from '@/types/shopping'
 
@@ -46,13 +47,12 @@ export function ShoppingListView() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-foreground">Shopping List</h1>
+          <PageHeading>Shopping List</PageHeading>
           <p className="text-sm text-muted-foreground">{label}</p>
         </div>
         <div className="flex gap-2">
           <Button
             size="sm"
-            variant="outline"
             onClick={() => clearMutation.mutate()}
             disabled={checkedItems === 0 || clearMutation.isPending}
           >

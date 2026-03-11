@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
   getShoppingList,
@@ -24,6 +24,7 @@ export function useShoppingList(
     queryKey,
     queryFn: () => getShoppingList(userId, weekStart, day === 'week' ? undefined : day),
     enabled: !!userId,
+    placeholderData: keepPreviousData,
   })
 
   const regenerateMutation = useMutation({
