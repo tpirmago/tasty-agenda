@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
@@ -13,6 +14,7 @@ import type { Recipe } from '@/types/recipe'
 export function usePlanner(userId: string, weekStart: string, familySize: number, dietPrefs: string[] = []) {
   const queryClient = useQueryClient()
   const queryKey = ['plan', userId, weekStart]
+  const planSnapshotRef = useRef<WeeklyPlan | undefined>(undefined)
 
   const planQuery = useQuery({
     queryKey,
@@ -75,13 +77,16 @@ export function usePlanner(userId: string, weekStart: string, familySize: number
       targetDay: DayOfWeek
       targetMealType: MealType
     }) => {
-      const plan = queryClient.getQueryData<WeeklyPlan>(queryKey)
+      // Use the snapshot captured in onMutate BEFORE the optimistic update,
+      // because queryClient.getQueryData() here already reflects the optimistic swap.
+      const plan = planSnapshotRef.current
       if (!plan) throw new Error('No plan data')
       return moveSlot(slotId, plan, targetDay, targetMealType)
     },
     onMutate: async ({ slotId, targetDay, targetMealType }) => {
       await queryClient.cancelQueries({ queryKey })
       const previous = queryClient.getQueryData<WeeklyPlan>(queryKey)
+      planSnapshotRef.current = previous // capture before optimistic update
       // Optimistic: swap or move
       queryClient.setQueryData<WeeklyPlan>(queryKey, (old) => {
         if (!old) return old

@@ -8,6 +8,7 @@ import {
   type DragEndEvent,
   type DragStartEvent,
 } from '@dnd-kit/core'
+import { GripVertical, Shuffle, Heart, Trash2 } from 'lucide-react'
 import { MealSlot } from './MealSlot'
 import { MealCard } from '@/components/meal/MealCard'
 import type { DayOfWeek, MealType, PlannerSlot, WeeklyPlan } from '@/types/planner'
@@ -90,6 +91,28 @@ export const WeekGrid = memo(function WeekGrid({
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="flex flex-col gap-6 pb-4">
+        {/* Tips banner */}
+        <div className="rounded-xl border-2 border-[#415B8F] bg-white px-5 py-4" style={{ boxShadow: '4px 4px 0 0 #415B8F' }}>
+          <p className="text-sm font-bold text-[#415B8F] mb-3">How to use your planner</p>
+          <ul className="flex flex-col sm:flex-row sm:flex-wrap gap-x-8 gap-y-2">
+            <li className="flex items-center gap-2 text-[13px] text-foreground">
+              <GripVertical size={15} className="shrink-0 text-[#415B8F]" />
+              Drag the grip to rearrange or swap meals
+            </li>
+            <li className="flex items-center gap-2 text-[13px] text-foreground">
+              <Shuffle size={15} className="shrink-0 text-[#415B8F]" />
+              Hover a card and click shuffle to replace a meal
+            </li>
+            <li className="flex items-center gap-2 text-[13px] text-foreground">
+              <Heart size={15} className="shrink-0 text-[#415B8F]" />
+              Click the heart to save a recipe to your collection
+            </li>
+            <li className="flex items-center gap-2 text-[13px] text-foreground">
+              <Trash2 size={15} className="shrink-0 text-[#415B8F]" />
+              Click trash to remove a meal from the plan
+            </li>
+          </ul>
+        </div>
         {DAYS.map((day) => (
           <div key={day}>
             <div className="relative mt-6 w-full">

@@ -14,6 +14,7 @@ import {
 import { WeekGrid } from '@/components/planner/WeekGrid'
 import { RecipeDetailDialog } from '@/components/meal/RecipeDetailDialog'
 import { ReplaceMealDialog } from './ReplaceMealDialog'
+import { AddMealDialog } from './AddMealDialog'
 import { usePlanner } from './usePlanner'
 import { useWeekNavigation } from '@/hooks/useWeekNavigation'
 import { useAuth } from '@/features/auth/useAuth'
@@ -41,6 +42,7 @@ export function PlannerBoard() {
 
   const [viewSlot, setViewSlot] = useState<PlannerSlot | null>(null)
   const [replaceSlot, setReplaceSlot] = useState<PlannerSlot | null>(null)
+  const [addSlot, setAddSlot] = useState<{ day: DayOfWeek; mealType: MealType } | null>(null)
   const [confirmRegenerate, setConfirmRegenerate] = useState(false)
 
   const emptyPlan = {
@@ -154,9 +156,7 @@ export function PlannerBoard() {
             onRemoveSlot={(id) => removeMutation.mutate(id)}
             onReplaceSlot={(slot) => setReplaceSlot(slot)}
             onViewSlot={(slot) => setViewSlot(slot)}
-            onAddMeal={(_day: DayOfWeek, _mt: MealType) => {
-              // TODO: open add meal dialog
-            }}
+            onAddMeal={(day: DayOfWeek, mt: MealType) => setAddSlot({ day, mealType: mt })}
             onMoveSlot={(slotId, targetDay, targetMealType) =>
               moveMutation.mutate({ slotId, targetDay, targetMealType })
             }
@@ -185,6 +185,17 @@ export function PlannerBoard() {
         onReplaced={() => {
           setReplaceSlot(null)
         }}
+      />
+
+      {/* Add meal dialog */}
+      <AddMealDialog
+        day={addSlot?.day ?? null}
+        mealType={addSlot?.mealType ?? null}
+        open={!!addSlot}
+        onClose={() => setAddSlot(null)}
+        userId={user?.id ?? ''}
+        weekStart={weekStart}
+        familySize={familySize}
       />
 
       {/* Regenerate confirmation dialog */}

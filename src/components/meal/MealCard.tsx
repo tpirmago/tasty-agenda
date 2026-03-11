@@ -43,14 +43,22 @@ export const MealCard = memo(function MealCard({
       onClick={onView}
       layout
     >
-      {/* Drag handle */}
-      <div
-        {...dragHandleProps}
-        className="absolute top-2 left-2 z-10 text-muted-foreground/50 hover:text-muted-foreground cursor-grab active:cursor-grabbing"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <GripVertical size={14} />
-      </div>
+      {/* Drag handle — visible only on hover */}
+      <AnimatePresence>
+        {(hovered || isDragging) && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            {...dragHandleProps}
+            className="absolute top-2 left-2 z-10 p-1.5 rounded-lg bg-background/80 shadow-sm cursor-grab active:cursor-grabbing"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <GripVertical size={13} className="text-foreground" />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Image */}
       <div className="relative h-32 w-full bg-muted overflow-hidden">

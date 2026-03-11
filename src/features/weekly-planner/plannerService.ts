@@ -131,19 +131,28 @@ export async function moveSlot(
   if (!sourceSlot) return
 
   if (targetSlot) {
-    // Swap: update both slots
-    const [r1, r2] = await Promise.all([
-      supabase
-        .from('weekly_plan')
-        .update({ day: targetDay, meal_type: targetMealType })
-        .eq('id', slotId),
-      supabase
-        .from('weekly_plan')
-        .update({ day: sourceSlot.day, meal_type: sourceSlot.mealType })
-        .eq('id', targetSlot.id),
-    ])
-    if (r1.error) throw r1.error
-    if (r2.error) throw r2.error
+    // Swap: parallel UPDATE violates unique constraint (user_id, week_start, day, meal_type).
+    // Instead: delete target, move source into target's slot, re-insert target at source's slot.
+    const { error: deleteError } = await supabase
+      .from('weekly_plan')
+      .delete()
+      .eq('id', targetSlot.id)
+    if (deleteError) throw deleteError
+
+    const { error: moveError } = await supabase
+      .from('weekly_plan')
+      .update({ day: targetDay, meal_type: targetMealType })
+      .eq('id', slotId)
+    if (moveError) throw moveError
+
+    await upsertSlot(
+      sourceSlot.userId,
+      sourceSlot.weekStart,
+      sourceSlot.day,
+      sourceSlot.mealType,
+      targetSlot.recipeId,
+      targetSlot.portions,
+    )
   } else {
     // Move to empty slot
     const { error } = await supabase
