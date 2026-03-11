@@ -37,12 +37,6 @@ export async function generateShoppingList(
 ): Promise<ShoppingItem[]> {
   const plan = await getWeekPlan(userId, weekStart)
 
-  const allSlots = Object.values(plan).flatMap((daySlots) =>
-    Object.values(daySlots).filter(Boolean)
-  )
-
-  const aggregated = aggregateIngredients(allSlots as Parameters<typeof aggregateIngredients>[0], familySize)
-
   // Delete existing
   await supabase
     .from('shopping_list')
@@ -50,18 +44,27 @@ export async function generateShoppingList(
     .eq('user_id', userId)
     .eq('week_start', weekStart)
 
-  if (!aggregated.length) return []
+  // Aggregate per day so day-view filtering works
+  const rows: object[] = []
+  for (const [day, daySlots] of Object.entries(plan)) {
+    const slots = Object.values(daySlots).filter(Boolean) as Parameters<typeof aggregateIngredients>[0]
+    if (!slots.length) continue
+    const aggregated = aggregateIngredients(slots)
+    for (const item of aggregated) {
+      rows.push({
+        user_id: userId,
+        week_start: weekStart,
+        ingredient: item.ingredient,
+        amount: item.amount,
+        unit: item.unit,
+        checked: item.checked,
+        day,
+        category: item.category,
+      })
+    }
+  }
 
-  const rows = aggregated.map((item) => ({
-    user_id: userId,
-    week_start: weekStart,
-    ingredient: item.ingredient,
-    amount: item.amount,
-    unit: item.unit,
-    checked: item.checked,
-    day: item.day,
-    category: item.category,
-  }))
+  if (!rows.length) return []
 
   const { data, error } = await supabase
     .from('shopping_list')

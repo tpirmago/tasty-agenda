@@ -66,7 +66,7 @@ export function Header({ onGenerateMeals, onAddRecipe, isGenerating }: HeaderPro
           </Button>
         )}
         {onAddRecipe && (
-          <Button size="sm" variant="outline" onClick={onAddRecipe} className="hidden sm:flex items-center gap-2">
+          <Button size="sm" onClick={onAddRecipe} className="hidden sm:flex items-center gap-2">
             <Plus size={15} />
             Add recipe
           </Button>

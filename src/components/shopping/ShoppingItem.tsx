@@ -1,32 +1,33 @@
 import { motion } from 'framer-motion'
 import { Checkbox } from '@/components/ui/checkbox'
-import type { ShoppingItem as ShoppingItemType } from '@/types/shopping'
+import type { MergedShoppingItem } from '@/types/shopping'
 
 interface ShoppingItemProps {
-  item: ShoppingItemType
-  onToggle: (id: string, checked: boolean) => void
+  item: MergedShoppingItem
+  onToggle: (ids: string[], checked: boolean) => void
 }
 
 export function ShoppingItem({ item, onToggle }: ShoppingItemProps) {
+  const id = item.ids[0]
   return (
-    <div className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-muted/50 transition-colors">
+    <div className="flex items-center gap-2.5 py-1.5 px-2 rounded-lg hover:bg-muted/50 transition-colors min-w-0">
       <Checkbox
-        id={item.id}
+        id={id}
         checked={item.checked}
-        onCheckedChange={(checked) => onToggle(item.id, !!checked)}
-        className="flex-shrink-0"
+        onCheckedChange={(checked) => onToggle(item.ids, !!checked)}
+        className="flex-shrink-0 border-foreground/40 size-5"
       />
-      <label htmlFor={item.id} className="flex-1 flex items-center justify-between cursor-pointer">
+      <label htmlFor={id} className="flex flex-col cursor-pointer min-w-0">
         <motion.span
-          animate={{ opacity: item.checked ? 0.5 : 1 }}
-          className="text-sm text-foreground"
+          animate={{ opacity: item.checked ? 0.4 : 1 }}
+          className="text-sm text-foreground leading-snug"
           style={{ textDecoration: item.checked ? 'line-through' : 'none' }}
         >
           {item.ingredient}
         </motion.span>
-        {(item.amount || item.unit) && (
-          <span className="text-xs text-muted-foreground ml-3 flex-shrink-0">
-            {item.amount} {item.unit}
+        {item.quantity && (
+          <span className="text-xs text-muted-foreground leading-snug">
+            {item.quantity}
           </span>
         )}
       </label>

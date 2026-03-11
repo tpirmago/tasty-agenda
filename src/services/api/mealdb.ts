@@ -5,8 +5,8 @@ const BASE = 'https://www.themealdb.com/api/json/v1/1'
 
 export const MEAL_TYPE_CATEGORIES: Record<MealType, string[]> = {
   breakfast: ['Breakfast'],
-  lunch: ['Chicken', 'Seafood', 'Vegetarian', 'Side'],
-  dinner: ['Beef', 'Pasta', 'Lamb', 'Pork', 'Goat', 'Miscellaneous'],
+  lunch: ['Chicken', 'Seafood', 'Vegetarian', 'Side', 'Starter', 'Vegan'],
+  dinner: ['Beef', 'Pasta', 'Lamb', 'Pork', 'Goat'],
 }
 
 function parseIngredients(meal: MealDBMeal): Ingredient[] {

@@ -124,7 +124,7 @@ export function ShoppingListView() {
                 key={category}
                 category={category}
                 items={items}
-                onToggle={(id, checked) => toggleMutation.mutate({ id, checked })}
+                onToggle={(ids, checked) => toggleMutation.mutate({ ids, checked })}
               />
             )
           })}

@@ -3,7 +3,7 @@ import { ChevronDown, ChevronRight, Beef, Milk, Salad, Package, Croissant, Snowf
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { ShoppingItem } from './ShoppingItem'
-import type { GroceryCategory, ShoppingItem as ShoppingItemType } from '@/types/shopping'
+import type { GroceryCategory, MergedShoppingItem } from '@/types/shopping'
 
 const CATEGORY_CONFIG: Record<GroceryCategory, { label: string; icon: React.ComponentType<{ size?: number; className?: string }> }> = {
   produce: { label: 'Produce', icon: Salad },
@@ -17,8 +17,8 @@ const CATEGORY_CONFIG: Record<GroceryCategory, { label: string; icon: React.Comp
 
 interface ShoppingGroupProps {
   category: GroceryCategory
-  items: ShoppingItemType[]
-  onToggle: (id: string, checked: boolean) => void
+  items: MergedShoppingItem[]
+  onToggle: (ids: string[], checked: boolean) => void
 }
 
 export function ShoppingGroup({ category, items, onToggle }: ShoppingGroupProps) {
@@ -48,9 +48,9 @@ export function ShoppingGroup({ category, items, onToggle }: ShoppingGroupProps)
       </button>
 
       {open && (
-        <div className={cn('ml-2 border-l border-border/40 pl-3')}>
+        <div className={cn('ml-2 border-l border-border/40 pl-3 grid grid-cols-1 sm:grid-cols-2 gap-x-4')}>
           {items.map((item) => (
-            <ShoppingItem key={item.id} item={item} onToggle={onToggle} />
+            <ShoppingItem key={item.ids.join('-')} item={item} onToggle={onToggle} />
           ))}
         </div>
       )}

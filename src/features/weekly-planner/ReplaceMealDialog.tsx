@@ -7,7 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { useUserRecipes } from '@/features/recipes/useRecipes'
 import { upsertSlot } from './plannerService'
 import { saveRecipeWithId } from '@/features/recipes/recipeService'
-import { fetchRandomMeal } from '@/services/api/mealdb'
+import { fetchMealForSlot } from '@/services/api/mealdb'
 import { AddRecipeModal } from '@/features/recipes/AddRecipeModal'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -63,7 +63,7 @@ export function ReplaceMealDialog({
     if (!slot) return
     setIsReplacing(true)
     try {
-      const meal = await fetchRandomMeal()
+      const meal = await fetchMealForSlot(slot.mealType)
       if (!meal) throw new Error('No meal found')
       await saveRecipeWithId(meal)
       await upsertSlot(userId, weekStart, slot.day, slot.mealType, meal.id, familySize)

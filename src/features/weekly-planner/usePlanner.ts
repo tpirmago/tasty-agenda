@@ -77,7 +77,7 @@ export function usePlanner(userId: string, weekStart: string, familySize: number
     }) => {
       const plan = queryClient.getQueryData<WeeklyPlan>(queryKey)
       if (!plan) throw new Error('No plan data')
-      return moveSlot(slotId, plan, targetDay, targetMealType, userId, weekStart)
+      return moveSlot(slotId, plan, targetDay, targetMealType)
     },
     onMutate: async ({ slotId, targetDay, targetMealType }) => {
       await queryClient.cancelQueries({ queryKey })

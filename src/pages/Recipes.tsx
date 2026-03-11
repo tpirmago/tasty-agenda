@@ -46,12 +46,8 @@ export function RecipesPage() {
       <div className="flex-1 px-4 lg:px-6 py-4">
         <div className="max-w-5xl mx-auto">
         {/* Page header */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="mb-4">
           <h1 className="text-xl font-bold text-foreground">Recipes</h1>
-          <Button size="sm" onClick={() => setShowAdd(true)} className="flex items-center gap-2">
-            <Plus size={14} />
-            Add recipe
-          </Button>
         </div>
 
         {/* Search + tabs */}
@@ -83,8 +79,7 @@ export function RecipesPage() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-16">
-            <div className="text-5xl mb-4">📖</div>
-            <h3 className="font-semibold text-foreground mb-2">
+<h3 className="font-semibold text-foreground mb-2">
               {search ? 'No recipes found' : 'No recipes yet'}
             </h3>
             <p className="text-sm text-muted-foreground mb-4">

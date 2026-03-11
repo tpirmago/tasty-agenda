@@ -21,4 +21,12 @@ export interface ShoppingItem {
   category: GroceryCategory
 }
 
-export type GroupedShoppingList = Partial<Record<GroceryCategory, ShoppingItem[]>>
+export interface MergedShoppingItem {
+  ids: string[]
+  ingredient: string
+  quantity: string | null
+  checked: boolean
+  category: GroceryCategory
+}
+
+export type GroupedShoppingList = Partial<Record<GroceryCategory, MergedShoppingItem[]>>

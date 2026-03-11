@@ -1,6 +1,7 @@
 import { Navigate } from 'react-router-dom'
 import { RegisterForm } from '@/features/auth/RegisterForm'
 import { useAuth } from '@/features/auth/useAuth'
+import { BrandHeader } from '@/components/ui/brand-header'
 
 export function Register() {
   const { user, isLoading } = useAuth()
@@ -9,9 +10,7 @@ export function Register() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4">
-      <div className="flex items-center gap-2 mb-8">
-        <span className="text-2xl font-bold text-foreground">Tasty Agenda</span>
-      </div>
+      <BrandHeader />
       <RegisterForm />
     </div>
   )

@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Pencil, Shuffle, Trash2, GripVertical, Utensils } from 'lucide-react'
+import { Shuffle, Trash2, GripVertical, Utensils } from 'lucide-react'
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
@@ -85,7 +85,7 @@ export const MealCard = memo(function MealCard({
         </div>
       </div>
 
-      {/* Hover overlay */}
+      {/* Action buttons — bottom-right corner */}
       <AnimatePresence>
         {hovered && !isDragging && (
           <motion.div
@@ -93,29 +93,22 @@ export const MealCard = memo(function MealCard({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="absolute inset-0 bg-foreground/60 rounded-xl flex items-center justify-center gap-2"
+            className="absolute bottom-2 right-2 flex gap-1"
             onClick={(e) => e.stopPropagation()}
           >
             <button
-              onClick={(e) => { e.stopPropagation(); onView?.() }}
-              className="p-2 rounded-lg bg-white/20 hover:bg-white/30 text-white transition-colors"
-              title="View recipe"
-            >
-              <Pencil size={14} />
-            </button>
-            <button
               onClick={(e) => { e.stopPropagation(); onReplace?.() }}
-              className="p-2 rounded-lg bg-white/20 hover:bg-white/30 text-white transition-colors"
+              className="p-1.5 rounded-lg bg-background/80 hover:bg-background text-foreground shadow-sm transition-colors"
               title="Replace meal"
             >
-              <Shuffle size={14} />
+              <Shuffle size={13} />
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); onRemove?.() }}
-              className="p-2 rounded-lg bg-red-500/40 hover:bg-red-500/60 text-white transition-colors"
+              className="p-1.5 rounded-lg bg-background/80 hover:bg-red-100 text-red-500 shadow-sm transition-colors"
               title="Remove meal"
             >
-              <Trash2 size={14} />
+              <Trash2 size={13} />
             </button>
           </motion.div>
         )}

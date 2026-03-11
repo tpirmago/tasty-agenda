@@ -37,13 +37,13 @@ export function useShoppingList(
   })
 
   const toggleMutation = useMutation({
-    mutationFn: ({ id, checked }: { id: string; checked: boolean }) =>
-      toggleShoppingItem(id, checked),
-    onMutate: async ({ id, checked }) => {
+    mutationFn: ({ ids, checked }: { ids: string[]; checked: boolean }) =>
+      Promise.all(ids.map((id) => toggleShoppingItem(id, checked))),
+    onMutate: async ({ ids, checked }) => {
       await queryClient.cancelQueries({ queryKey })
       const previous = queryClient.getQueryData<ShoppingItem[]>(queryKey)
       queryClient.setQueryData<ShoppingItem[]>(queryKey, (old) =>
-        old?.map((item) => (item.id === id ? { ...item, checked } : item)) ?? []
+        old?.map((item) => (ids.includes(item.id) ? { ...item, checked } : item)) ?? []
       )
       return { previous }
     },

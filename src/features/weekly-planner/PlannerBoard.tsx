@@ -1,6 +1,16 @@
 import { useState } from 'react'
-import { ChevronLeft, ChevronRight, CalendarDays, Wand2 } from 'lucide-react'
+import { ChevronLeft, ChevronRight, CalendarDays, Wand2, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { WeekGrid } from '@/components/planner/WeekGrid'
 import { RecipeDetailDialog } from '@/components/meal/RecipeDetailDialog'
 import { ReplaceMealDialog } from './ReplaceMealDialog'
@@ -22,6 +32,7 @@ export function PlannerBoard() {
 
   const [viewSlot, setViewSlot] = useState<PlannerSlot | null>(null)
   const [replaceSlot, setReplaceSlot] = useState<PlannerSlot | null>(null)
+  const [confirmRegenerate, setConfirmRegenerate] = useState(false)
 
   const emptyPlan = {
     Mon: { breakfast: null, lunch: null, dinner: null },
@@ -68,18 +79,34 @@ export function PlannerBoard() {
           )}
         </div>
 
-        <Button
-          size="sm"
-          onClick={() => generateMutation.mutate()}
-          disabled={isGenerating}
-          className={cn('flex items-center gap-2', isGenerating && 'opacity-75')}
-        >
-          <Wand2 size={14} className={isGenerating ? 'animate-spin' : ''} />
-          <span className="hidden sm:inline">
-            {isGenerating ? 'Generating...' : 'Generate week'}
-          </span>
-          <span className="sm:hidden">Generate</span>
-        </Button>
+        {totalMeals > 0 ? (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setConfirmRegenerate(true)}
+            disabled={isGenerating}
+            className={cn('flex items-center gap-2', isGenerating && 'opacity-75')}
+          >
+            <RefreshCw size={14} className={isGenerating ? 'animate-spin' : ''} />
+            <span className="hidden sm:inline">
+              {isGenerating ? 'Generating...' : 'Regenerate week'}
+            </span>
+            <span className="sm:hidden">Regenerate</span>
+          </Button>
+        ) : (
+          <Button
+            size="sm"
+            onClick={() => generateMutation.mutate()}
+            disabled={isGenerating}
+            className={cn('flex items-center gap-2', isGenerating && 'opacity-75')}
+          >
+            <Wand2 size={14} className={isGenerating ? 'animate-spin' : ''} />
+            <span className="hidden sm:inline">
+              {isGenerating ? 'Generating...' : 'Generate week'}
+            </span>
+            <span className="sm:hidden">Generate</span>
+          </Button>
+        )}
       </div>
       </div>
 
@@ -140,6 +167,29 @@ export function PlannerBoard() {
           setReplaceSlot(null)
         }}
       />
+
+      {/* Regenerate confirmation dialog */}
+      <AlertDialog open={confirmRegenerate} onOpenChange={setConfirmRegenerate}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Regenerate the whole week?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will replace all {totalMeals} planned meals with new ones. This can't be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setConfirmRegenerate(false)
+                generateMutation.mutate()
+              }}
+            >
+              Yes, regenerate
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

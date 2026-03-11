@@ -98,7 +98,10 @@ export async function upsertSlot(
     },
     { onConflict: 'user_id,week_start,day,meal_type' }
   )
-  if (error) throw error
+  if (error) {
+    console.error('[upsertSlot] error:', { day, mealType, recipeId }, error)
+    throw error
+  }
 }
 
 export async function removeSlot(id: string): Promise<void> {
@@ -110,9 +113,7 @@ export async function moveSlot(
   slotId: string,
   currentPlan: WeeklyPlan,
   targetDay: DayOfWeek,
-  targetMealType: MealType,
-  userId: string,
-  weekStart: string
+  targetMealType: MealType
 ): Promise<void> {
   const targetSlot = currentPlan[targetDay][targetMealType]
 
@@ -131,7 +132,7 @@ export async function moveSlot(
 
   if (targetSlot) {
     // Swap: update both slots
-    await Promise.all([
+    const [r1, r2] = await Promise.all([
       supabase
         .from('weekly_plan')
         .update({ day: targetDay, meal_type: targetMealType })
@@ -141,6 +142,8 @@ export async function moveSlot(
         .update({ day: sourceSlot.day, meal_type: sourceSlot.mealType })
         .eq('id', targetSlot.id),
     ])
+    if (r1.error) throw r1.error
+    if (r2.error) throw r2.error
   } else {
     // Move to empty slot
     const { error } = await supabase
@@ -149,8 +152,6 @@ export async function moveSlot(
       .eq('id', slotId)
     if (error) throw error
   }
-
-  await upsertSlot(userId, weekStart, targetDay, targetMealType, sourceSlot.recipeId, sourceSlot.portions)
 }
 
 export async function generateWeek(
@@ -158,7 +159,6 @@ export async function generateWeek(
   weekStart: string,
   familySize: number
 ): Promise<WeeklyPlan> {
-  // Fetch all 21 meals in parallel
   const slots: { day: DayOfWeek; mealType: MealType }[] = []
   for (const day of DAYS) {
     for (const mt of MEAL_TYPES) {
@@ -166,24 +166,38 @@ export async function generateWeek(
     }
   }
 
-  console.log('[generateWeek] fetching meals from MealDB...')
-  const meals = await Promise.all(
-    slots.map((s) => fetchMealForSlot(s.mealType))
-  )
-  console.log('[generateWeek] fetched meals:', meals.filter(Boolean).length, '/', meals.length)
+  const meals: (Awaited<ReturnType<typeof fetchMealForSlot>>)[] = []
+  for (const s of slots) {
+    try {
+      const meal = await fetchMealForSlot(s.mealType)
+      meals.push(meal)
+    } catch (e) {
+      console.warn('[generateWeek] fetchMealForSlot failed:', s, e)
+      meals.push(null)
+    }
+  }
 
-  // Save recipes and upsert plan slots
+  // Save all recipes (ignore errors for recipes already in DB)
   await Promise.all(
-    slots.map(async (s, i) => {
-      const meal = meals[i]
-      if (!meal) return
-
-      console.log('[generateWeek] saving recipe:', meal.id, meal.title)
-      await saveRecipeWithId(meal)
-      console.log('[generateWeek] upserting slot:', s.day, s.mealType)
-      await upsertSlot(userId, weekStart, s.day, s.mealType, meal.id, familySize)
-    })
+    meals.map((meal) =>
+      meal ? saveRecipeWithId(meal).catch((e) => console.warn('[generateWeek] saveRecipeWithId failed:', meal.id, e)) : Promise.resolve()
+    )
   )
+
+  // Delete existing plan for this week before inserting new slots
+  const { error: deleteError } = await supabase
+    .from('weekly_plan')
+    .delete()
+    .eq('user_id', userId)
+    .eq('week_start', weekStart)
+  if (deleteError) console.warn('[generateWeek] delete error:', deleteError)
+
+  // Insert new slots sequentially to avoid conflicts
+  for (let i = 0; i < slots.length; i++) {
+    const meal = meals[i]
+    if (!meal) continue
+    await upsertSlot(userId, weekStart, slots[i].day, slots[i].mealType, meal.id, familySize)
+  }
 
   return getWeekPlan(userId, weekStart)
 }
